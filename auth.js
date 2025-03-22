@@ -48,10 +48,11 @@ async function loginUser(email, password) {
 
     // Get user role and redirect accordingly
     const { data: userData, error: roleError } = await supabase
-        .from('users')
-        .select('role')
-        .eq('email', email)
-        .single();
+    .from('users')
+    .select('role')
+    .eq('email', email)
+    .limit(1)  // ✅ Ensures only one result is returned
+    .maybeSingle();  // ✅ Prevents errors if no user is found
 
     if (roleError) {
         console.error("Role Fetch Error:", roleError.message);
