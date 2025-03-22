@@ -1,4 +1,4 @@
-import { supabase } from './supabaseClient.js';
+import { supabase } from "./supabaseClient.js";
 
 // User Registration
 async function registerUser(email, password, name) {
