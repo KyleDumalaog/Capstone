@@ -1,17 +1,19 @@
 <!-- admin_dashboard.html (Admin Page) -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <script type="module" src="auth.js"></script>
+    <head>
+        <script type="module" src="auth.js"></script>
         <script type="module" src="user_dashboard.js"></script>
         <script type="module" src="history.js"></script>
         <script type="module" src="rewards.js"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
-    <script defer src="admin_dashboard.js"></script>
-</head>
+        <script type="module" src="admin_dashboard.js"></script> <!-- ✅ Fix applied -->
+        
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Admin Dashboard</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    
 <body>
     <h2>Admin Dashboard</h2>
     <p>Machine Status: <span id="machine-status">Checking...</span></p>
