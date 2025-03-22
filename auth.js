@@ -95,9 +95,52 @@ async function logoutUser() {
     }
 }
 
+// Protect Pages: Only Authenticated Users Can Access Dashboards
+async function checkAuth() {
+    const { data: user, error } = await supabase.auth.getUser();
+
+    if (error || !user) {
+        console.log("Not authenticated, redirecting to login...");
+        window.location.href = "index.html"; // Redirect to login page
+        return;
+    }
+
+    // Fetch user role from database
+    const { data: userData, error: roleError } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.user.id)
+        .maybeSingle();
+
+    if (roleError || !userData) {
+        console.log("User not found, redirecting...");
+        window.location.href = "index.html";
+        return;
+    }
+
+    // Check if the user is allowed on this page
+    const allowedRoles = {
+        "superadmin_dashboard.html": "superadmin",
+        "admin_dashboard.html": "admin",
+        "user_dashboard.html": "user"
+    };
+
+    const currentPage = window.location.pathname.split('/').pop(); // Get current file name
+    if (userData.role !== allowedRoles[currentPage]) {
+        alert("Unauthorized access!");
+        window.location.href = "index.html"; // Redirect unauthorized users
+    }
+}
+
 // Attach event listeners when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded");
+
+    // 🔐 Check authentication on page load (Only for dashboards)
+    const dashboardPages = ["superadmin_dashboard.html", "admin_dashboard.html", "user_dashboard.html"];
+    if (dashboardPages.includes(window.location.pathname.split('/').pop())) {
+        checkAuth();
+    }
 
     // Register event
     const registerForm = document.getElementById('register-form');
