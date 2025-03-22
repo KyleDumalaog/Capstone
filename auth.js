@@ -47,8 +47,9 @@ async function registerUser(email, password, name) {
     alert("Registration successful! You can now log in.");
 }
 
-// Login User
 async function loginUser(email, password) {
+    console.log("Logging in with:", email, password);
+
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
@@ -57,31 +58,9 @@ async function loginUser(email, password) {
         return;
     }
 
-    // 🔹 Fetch user role
-    const { data: userData, error: roleError } = await supabase
-        .from('users')
-        .select('role')
-        .eq('email', email)
-        .maybeSingle();
-
-    if (roleError || !userData) {
-        console.error("Role Fetch Error:", roleError?.message);
-        alert("Error fetching user role or user does not exist.");
-        return;
-    }
-
     console.log("Login Success:", data);
-    alert("Login successful!");
-
-    // 🔹 Redirect based on role
-    if (userData.role === 'superadmin') {
-        window.location.href = "superadmin_dashboard.html";
-    } else if (userData.role === 'admin') {
-        window.location.href = "admin_dashboard.html";
-    } else {
-        window.location.href = "user_dashboard.html";
-    }
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded");
