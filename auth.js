@@ -83,9 +83,23 @@ async function loginUser(email, password) {
     }
 }
 
+// Logout User (Works for All Roles)
+async function logoutUser() {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+        console.error("Logout Error:", error.message);
+        alert("Logout failed. Try again.");
+    } else {
+        console.log("Logout successful");
+        window.location.href = "index.html"; // Redirect to login page
+    }
+}
+
+// Attach event listeners when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded");
 
+    // Register event
     const registerForm = document.getElementById('register-form');
     if (registerForm) {
         registerForm.addEventListener('submit', async (e) => {
@@ -99,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Login event
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
@@ -108,6 +123,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             console.log("Logging in:", email);
             await loginUser(email, password);
+        });
+    }
+
+    // Logout event for all dashboards
+    const logoutBtn = document.getElementById('logout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent instant navigation
+            logoutUser();
         });
     }
 });
