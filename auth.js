@@ -1,10 +1,14 @@
 import { supabase } from './supabaseClient.js';
 
 async function registerUser(email, password, name) {
-    const { data, error } = await supabase.auth.signUp({
-        email,
-        password
-    });
+    // Prevent predefined admin/superadmin from registering again
+    const predefinedAdmins = ["admin@example.com", "superadmin@example.com"];
+    if (predefinedAdmins.includes(email)) {
+        alert("This email is reserved. Please contact support.");
+        return;
+    }
+
+    const { data, error } = await supabase.auth.signUp({ email, password });
 
     if (error) {
         console.error("Registration Error:", error.message);
@@ -12,32 +16,33 @@ async function registerUser(email, password, name) {
         return;
     }
 
-    // 🔹 Get user ID from the correct structure
+    // 🔹 Get user ID from Supabase response
     const userId = data?.user?.id || data?.id;
     if (!userId) {
         console.error("Error: User ID is undefined");
         return;
     }
-    // Check if email already exists
+
+    // Check if email already exists in `users` table
     const { data: existingUser, error: fetchError } = await supabase
-    .from('users')
-    .select('id')
-    .eq('email', email)
-    .maybeSingle();
+        .from('users')
+        .select('id')
+        .eq('email', email)
+        .maybeSingle();
 
     if (fetchError) {
-    console.error("Error checking existing user:", fetchError.message);
-    alert("Error checking existing user.");
-    return;
+        console.error("Error checking existing user:", fetchError.message);
+        alert("Error checking existing user.");
+        return;
     }
 
     if (existingUser) {
-    console.error("User already exists in database.");
-    alert("User already exists. Please log in instead.");
-    return;
+        console.error("User already exists in database.");
+        alert("User already exists. Please log in instead.");
+        return;
     }
-    
-    // 🔹 Insert into users table (without password)
+
+    // 🔹 Insert user into `users` table with default role
     const { error: insertError } = await supabase.from('users').insert([
         { id: userId, email, name, role: 'user', points: 0 }
     ]);
@@ -53,10 +58,7 @@ async function registerUser(email, password, name) {
 
 // Login User
 async function loginUser(email, password) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password
-    });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
         console.error("Login Error:", error.message);
@@ -66,30 +68,27 @@ async function loginUser(email, password) {
 
     // 🔹 Fetch user role from `users` table
     const { data: userData, error: roleError } = await supabase
-    .from('users')
-    .select('role')
-    .eq('email', email)
-    .maybeSingle();
+        .from('users')
+        .select('role')
+        .eq('email', email)
+        .maybeSingle();
 
-if (roleError) {
-    console.error("Role Fetch Error:", roleError.message);
-    alert("Error fetching user role.");
-    return;
-}
+    if (roleError || !userData) {
+        console.error("Role Fetch Error:", roleError?.message);
+        alert("Error fetching user role or user does not exist.");
+        return;
+    }
 
-if (!userData) {
-    console.error("No user found with this email.");
-    alert("User not found in database. Please register first.");
-    return;
-}
+    alert("Login successful!");
 
-alert("Login successful!");
-
-if (userData.role === 'admin') {
-    window.location.href = "admin_dashboard.html";
-} else {
-    window.location.href = "user_dashboard.html";
-}
+    // 🔹 Redirect users based on their role
+    if (userData.role === 'superadmin') {
+        window.location.href = "superadmin_dashboard.html";
+    } else if (userData.role === 'admin') {
+        window.location.href = "admin_dashboard.html";
+    } else {
+        window.location.href = "user_dashboard.html";
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
