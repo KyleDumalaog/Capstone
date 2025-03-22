@@ -12,20 +12,25 @@ async function registerUser(email, password, name) {
         return;
     }
 
-    const user = data.user; // ✅ Fix: Get user from data
-    if (!user) {
-        console.error("❌ User registration failed. No user returned.");
-        alert("User registration failed.");
+    // 🔹 Get user ID from the correct data structure
+    const userId = data?.user?.id;
+
+    if (!userId) {
+        console.error("Error: User ID is undefined");
         return;
     }
 
-    // Save user info in database
-    await supabase.from('users').insert([
-        { id: user.id, email: email, name: name, role: 'user', points: 0 }
+    // 🔹 Correct insert request
+    const { error: insertError } = await supabase.from('users').insert([
+        { id: userId, email: email, name: name, role: 'user', points: 0 }
     ]);
+    
+    if (insertError) {
+        console.error("Insert Error:", insertError);
+        alert(`Insert failed: ${insertError.message}`);
+        return;
+    }    
 
-    alert("Registration successful! Please check your email.");
-}
 
 // Login User
 async function loginUser(email, password) {
