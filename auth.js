@@ -7,6 +7,19 @@ window.onpopstate = function () {
     window.location.href = "index.html"; // Redirect to login
 };
 
+// 🔹 Force Session Expiration When Logging Out
+async function logoutUser() {
+    await supabase.auth.signOut(); // Sign out from Supabase
+    localStorage.clear(); // Clear local storage
+    sessionStorage.clear(); // Clear session storage
+    document.cookie = ""; // Clear cookies if used
+
+    console.log("Logout successful, session cleared.");
+    alert("You have been logged out."); // ✅ Show logout message
+
+    window.location.href = "index.html"; // Redirect to login page
+}
+
 // 🔹 Register User
 async function registerUser(email, password, name) {
     const predefinedAdmins = {
