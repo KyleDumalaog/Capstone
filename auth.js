@@ -1,8 +1,7 @@
 import { supabase } from './supabaseClient.js';
 
-// Register User
 async function registerUser(email, password, name) {
-    const { user, error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
         email: email,
         password: password
     });
@@ -10,6 +9,13 @@ async function registerUser(email, password, name) {
     if (error) {
         console.error("Registration Error:", error.message);
         alert(error.message);
+        return;
+    }
+
+    const user = data.user; // ✅ Fix: Get user from data
+    if (!user) {
+        console.error("❌ User registration failed. No user returned.");
+        alert("User registration failed.");
         return;
     }
 
