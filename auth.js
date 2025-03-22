@@ -54,9 +54,11 @@ async function loginUser(email, password) {
         window.location.href = "user_dashboard.html";
     }
 }
+import { supabase } from './supabaseClient.js';
 
-// Event Listeners (Make sure these match your HTML IDs)
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM fully loaded"); // Debugging check
+
     const registerForm = document.getElementById('register-form');
     const loginForm = document.getElementById('login-form');
 
@@ -67,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
+            console.log("Registering:", name, email); // Debugging check
             await registerUser(email, password, name);
         });
     } else {
@@ -79,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
+            console.log("Logging in:", email); // Debugging check
             await loginUser(email, password);
         });
     } else {
