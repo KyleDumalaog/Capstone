@@ -43,8 +43,8 @@ async function loginUser(email, password) {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-        console.error("Login Error:", error.message);
-        alert(error.message);
+        console.error("Login Error:", error);
+        alert(`Error: ${error.message}`);
         return;
     }
 
@@ -61,6 +61,7 @@ async function loginUser(email, password) {
         return;
     }
 
+    console.log("Login Success:", data);
     alert("Login successful!");
 
     // 🔹 Redirect based on role
