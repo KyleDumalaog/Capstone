@@ -7,19 +7,6 @@ window.onpopstate = function () {
     window.location.href = "index.html"; // Redirect to login
 };
 
-// 🔹 Force Session Expiration When Logging Out
-async function logoutUser() {
-    await supabase.auth.signOut(); // Sign out from Supabase
-    localStorage.clear(); // Clear local storage
-    sessionStorage.clear(); // Clear session storage
-    document.cookie = ""; // Clear cookies if used
-
-    console.log("Logout successful, session cleared.");
-    alert("You have been logged out."); // ✅ Show logout message
-
-    window.location.href = "index.html"; // Redirect to login page
-}
-
 // 🔹 Register User
 async function registerUser(email, password, name) {
     const predefinedAdmins = {
@@ -97,17 +84,27 @@ async function loginUser(email, password) {
     }
 }
 
-// 🔹 Logout User
+// 🔹 Logout User (Force Session Expiration)
 async function logoutUser() {
     const { error } = await supabase.auth.signOut();
+
     if (error) {
         console.error("Logout Error:", error.message);
         alert("Logout failed. Try again.");
-    } else {
-        console.log("Logout successful");
-        window.location.href = "index.html";
+        return;
     }
+
+    // 🔹 Clear session storage
+    localStorage.clear();
+    sessionStorage.clear();
+    document.cookie = ""; // Clear cookies if used
+
+    console.log("Logout successful, session cleared.");
+    alert("You have been logged out."); // ✅ Show logout message
+
+    window.location.href = "index.html"; // Redirect to login page
 }
+
 
 // 🔹 Protect Pages: Allow Only Authenticated Users
 async function checkAuth() {
