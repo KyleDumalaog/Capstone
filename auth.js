@@ -18,7 +18,25 @@ async function registerUser(email, password, name) {
         console.error("Error: User ID is undefined");
         return;
     }
+    // Check if email already exists
+    const { data: existingUser, error: fetchError } = await supabase
+    .from('users')
+    .select('id')
+    .eq('email', email)
+    .maybeSingle();
 
+    if (fetchError) {
+    console.error("Error checking existing user:", fetchError.message);
+    alert("Error checking existing user.");
+    return;
+    }
+
+    if (existingUser) {
+    console.error("User already exists in database.");
+    alert("User already exists. Please log in instead.");
+    return;
+    }
+    
     // 🔹 Insert into users table (without password)
     const { error: insertError } = await supabase.from('users').insert([
         { id: userId, email, name, role: 'user', points: 0 }
@@ -65,13 +83,13 @@ if (!userData) {
     return;
 }
 
-    alert("Login successful!");
+alert("Login successful!");
 
-    if (userData.role === 'admin') {
-        window.location.href = "admin_dashboard.html";
-    } else {
-        window.location.href = "user_dashboard.html";
-    }
+if (userData.role === 'admin') {
+    window.location.href = "admin_dashboard.html";
+} else {
+    window.location.href = "user_dashboard.html";
+}
 }
 
 document.addEventListener('DOMContentLoaded', () => {
