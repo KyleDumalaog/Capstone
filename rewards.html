@@ -1,0 +1,29 @@
+<!-- rewards.html (User Rewards Page) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="module" src="auth.js"></script>
+    <script type="module" src="user_dashboard.js"></script>
+    <script type="module" src="history.js"></script>
+    <script type="module" src="rewards.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Rewards</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="rewards.js"></script>
+</head>
+<body>
+    <nav>
+        <a href="user_dashboard.html">Dashboard</a>
+        <a href="history.html">History</a>
+        <a href="rewards.html">Rewards</a>
+        <a href="index.html" id="logout">Logout</a>
+    </nav>
+    <div class="rewards-container">
+        <h2>Your Rewards</h2>
+        <p>Total Points: <span id="user-points">0</span></p>
+        <h3>Redeemable Rewards</h3>
+        <ul id="reward-list"></ul>
+    </div>
+</body>
+</html>
