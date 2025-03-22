@@ -24,12 +24,15 @@ async function registerUser(email, password, name) {
     const { error: insertError } = await supabase.from('users').insert([
         { id: userId, email: email, name: name, role: 'user', points: 0 }
     ]);
-    
+
     if (insertError) {
         console.error("Insert Error:", insertError);
         alert(`Insert failed: ${insertError.message}`);
         return;
-    }    
+    }
+
+    alert("Registration successful! Please check your email.");
+}    
 
 
 // Login User
