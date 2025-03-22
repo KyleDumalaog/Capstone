@@ -1,8 +1,8 @@
-import { supabase } from "./supabaseClient.js";
+import { supabase } from './supabaseClient.js';
 
-// User Registration
+// Register User
 async function registerUser(email, password, name) {
-    let { user, error } = await supabase.auth.signUp({
+    const { user, error } = await supabase.auth.signUp({
         email: email,
         password: password
     });
@@ -13,7 +13,7 @@ async function registerUser(email, password, name) {
         return;
     }
 
-    // Save additional user details
+    // Save user info in database
     await supabase.from('users').insert([
         { id: user.id, email: email, name: name, role: 'user', points: 0 }
     ]);
@@ -21,9 +21,9 @@ async function registerUser(email, password, name) {
     alert("Registration successful! Please check your email.");
 }
 
-// User Login with Role-Based Redirection
+// Login User
 async function loginUser(email, password) {
-    let { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
         email: email,
         password: password
     });
@@ -34,43 +34,38 @@ async function loginUser(email, password) {
         return;
     }
 
-    // Fetch user details to check role
-    const { data: userData, error: userError } = await supabase
+    // Get user role and redirect accordingly
+    const { data: userData, error: roleError } = await supabase
         .from('users')
         .select('role')
         .eq('email', email)
         .single();
 
-    if (userError) {
-        console.error("User Fetch Error:", userError.message);
-        alert("Failed to fetch user data.");
+    if (roleError) {
+        console.error("Role Fetch Error:", roleError.message);
         return;
     }
 
-    const userRole = userData.role;
+    alert("Login successful!");
 
-    // Redirect based on user role
-    if (userRole === 'user') {
-        window.location.href = "user_dashboard.html";
-    } else if (userRole === 'admin') {
+    if (userData.role === 'admin') {
         window.location.href = "admin_dashboard.html";
-    } else if (userRole === 'superadmin') {
-        window.location.href = "superadmin_dashboard.html";
     } else {
-        alert("Invalid role detected!");
+        window.location.href = "user_dashboard.html";
     }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    const registerForm = document.getElementById("registerForm");
-    const loginForm = document.getElementById("loginForm");
+// Event Listeners (Make sure these match your HTML IDs)
+document.addEventListener('DOMContentLoaded', () => {
+    const registerForm = document.getElementById('register-form');
+    const loginForm = document.getElementById('login-form');
 
     if (registerForm) {
-        registerForm.addEventListener("submit", async (e) => {
+        registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById("registerEmail").value;
-            const password = document.getElementById("registerPassword").value;
-            const name = document.getElementById("registerName").value;
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
             await registerUser(email, password, name);
         });
@@ -79,10 +74,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (loginForm) {
-        loginForm.addEventListener("submit", async (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById("loginEmail").value;
-            const password = document.getElementById("loginPassword").value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
             await loginUser(email, password);
         });
@@ -90,5 +85,3 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("❌ Login form not found! Check your HTML file.");
     }
 });
-
-
