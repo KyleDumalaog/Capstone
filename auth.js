@@ -54,7 +54,6 @@ async function loginUser(email, password) {
         window.location.href = "user_dashboard.html";
     }
 }
-import { supabase } from './supabaseClient.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded"); // Debugging check
