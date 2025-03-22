@@ -80,6 +80,10 @@ async function loginUser(email, password) {
     }
 
     alert("Login successful!");
+    
+    await loginUser('admin@example.com', 'AdminPassword123'); 
+    await loginUser('superadmin@example.com', 'SuperAdminPassword123');
+
 
     // 🔹 Redirect users based on their role
     if (userData.role === 'superadmin') {
@@ -118,4 +122,5 @@ document.addEventListener('DOMContentLoaded', () => {
             await loginUser(email, password);
         });
     }
+    
 });
