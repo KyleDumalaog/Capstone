@@ -62,33 +62,33 @@ async function loginUser(email, password) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    // Ensure elements exist before adding event listeners
-    const registerForm = document.getElementById('registerForm');
-    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById("registerForm");
+    const loginForm = document.getElementById("loginForm");
 
     if (registerForm) {
-        registerForm.addEventListener('submit', async (e) => {
+        registerForm.addEventListener("submit", async (e) => {
             e.preventDefault();
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            const name = document.getElementById('registerName').value;
+            const email = document.getElementById("registerEmail").value;
+            const password = document.getElementById("registerPassword").value;
+            const name = document.getElementById("registerName").value;
 
             await registerUser(email, password, name);
         });
     } else {
-        console.error("Register form not found!");
+        console.error("❌ Register form not found! Check your HTML file.");
     }
 
     if (loginForm) {
-        loginForm.addEventListener('submit', async (e) => {
+        loginForm.addEventListener("submit", async (e) => {
             e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
+            const email = document.getElementById("loginEmail").value;
+            const password = document.getElementById("loginPassword").value;
 
             await loginUser(email, password);
         });
     } else {
-        console.error("Login form not found!");
+        console.error("❌ Login form not found! Check your HTML file.");
     }
 });
+
 
