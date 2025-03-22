@@ -1,25 +1,99 @@
 import { supabase } from './supabaseClient.js';
 
-// 🔹 Prevent Back Navigation & Show Message
-function preventBack() {
-    window.history.pushState(null, "", window.location.href);
-    window.onpopstate = function () {
-        alert("Session expired! Please log in again."); // ✅ Show message
-        window.location.href = "index.html"; // Redirect to login
+// 🔹 Prevent Back Navigation After Logout & Show Message
+window.history.pushState(null, "", window.location.href);
+window.onpopstate = function () {
+    alert("Session expired! Please log in again."); // ✅ Show message
+    window.location.href = "index.html"; // Redirect to login
+};
+
+// 🔹 Register User
+async function registerUser(email, password, name) {
+    const predefinedAdmins = {
+        "admin@example.com": "admin",
+        "superadmin@example.com": "superadmin"
     };
+
+    let role = "user";
+    if (predefinedAdmins[email]) {
+        role = predefinedAdmins[email];
+    }
+
+    const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { email_confirm: true }
+    });
+
+    if (error) {
+        console.error("Registration Error:", error.message);
+        alert(error.message);
+        return;
+    }
+
+    const userId = data?.user?.id;
+    if (!userId) {
+        console.error("Error: User ID is undefined");
+        return;
+    }
+
+    const { error: insertError } = await supabase.from('users').insert([
+        { id: userId, email, name, role, points: 0 }
+    ]);
+
+    if (insertError) {
+        console.error("Insert Error:", insertError.message);
+        alert(`Insert failed: ${insertError.message}`);
+        return;
+    }
+
+    alert("Registration successful! Check your email for confirmation.");
 }
 
-// 🔹 Logout User (Clears Session Immediately)
-async function logoutUser() {
-    await supabase.auth.signOut(); // Supabase logout
-    localStorage.clear(); // Clear local storage
-    sessionStorage.clear(); // Clear session storage
-    document.cookie = ""; // Clear cookies (if used)
-    
-    console.log("✅ Logout successful, session cleared.");
-    alert("You have been logged out.");
+// 🔹 Login User
+async function loginUser(email, password) {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-    window.location.href = "index.html"; // Redirect to login
+    if (error) {
+        console.error("Login Error:", error);
+        alert(`Error: ${error.message}`);
+        return;
+    }
+
+    const { data: userData, error: roleError } = await supabase
+        .from('users')
+        .select('role')
+        .eq('email', email)
+        .maybeSingle();
+
+    if (roleError || !userData) {
+        console.error("Role Fetch Error:", roleError?.message);
+        alert("Error fetching user role or user does not exist.");
+        return;
+    }
+
+    console.log("Login Success:", data);
+    alert("Login successful!");
+
+    if (userData.role === 'superadmin') {
+        window.location.href = "superadmin_dashboard.html";
+    } else if (userData.role === 'admin') {
+        window.location.href = "admin_dashboard.html";
+    } else {
+        window.location.href = "user_dashboard.html";
+    }
+}
+
+// 🔹 Logout User
+async function logoutUser() {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+        console.error("Logout Error:", error.message);
+        alert("Logout failed. Try again.");
+    } else {
+        console.log("Logout successful");
+        window.location.href = "index.html";
+    }
 }
 
 // 🔹 Protect Pages: Allow Only Authenticated Users
@@ -29,7 +103,7 @@ async function checkAuth() {
     const protectedPages = ["superadmin_dashboard.html", "admin_dashboard.html", "user_dashboard.html", "history.html", "rewards.html"];
 
     if (error || !user || !user.user) {
-        console.log("❌ Not authenticated, redirecting to login...");
+        console.log("Not authenticated, redirecting to login...");
         if (protectedPages.includes(currentPage)) {
             alert("Session expired! Please log in again."); // ✅ Alert before redirect
             window.location.href = "index.html"; 
@@ -37,7 +111,6 @@ async function checkAuth() {
         return;
     }
 
-    // 🔹 Fetch user role
     const { data: userData, error: roleError } = await supabase
         .from('users')
         .select('role')
@@ -45,13 +118,12 @@ async function checkAuth() {
         .maybeSingle();
 
     if (roleError || !userData) {
-        console.log("❌ User not found, redirecting...");
+        console.log("User not found, redirecting...");
         alert("Session expired! Please log in again."); // ✅ Alert before redirect
         window.location.href = "index.html";
         return;
     }
 
-    // 🔹 Define allowed roles per page
     const allowedRoles = {
         "superadmin_dashboard.html": "superadmin",
         "admin_dashboard.html": "admin",
@@ -68,10 +140,7 @@ async function checkAuth() {
 
 // 🔹 Run Authentication Checks on Page Load
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("✅ DOM fully loaded");
-
-    // Apply back-button prevention
-    preventBack();
+    console.log("DOM fully loaded");
 
     const currentPage = window.location.pathname.split('/').pop();
     const protectedPages = ["superadmin_dashboard.html", "admin_dashboard.html", "user_dashboard.html", "history.html", "rewards.html"];
@@ -86,6 +155,33 @@ document.addEventListener('DOMContentLoaded', () => {
         logoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
             logoutUser();
+        });
+    }
+
+    // 🔹 Register Form Submission
+    const registerForm = document.getElementById('register-form');
+    if (registerForm) {
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            console.log("Registering:", name, email);
+            await registerUser(email, password, name);
+        });
+    }
+
+    // 🔹 Login Form Submission
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            console.log("Logging in:", email);
+            await loginUser(email, password);
         });
     }
 });
