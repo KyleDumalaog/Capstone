@@ -36,8 +36,8 @@ async function registerUser(email, password, name) {
 // Login User
 async function loginUser(email, password) {
     const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
+        email: email,
+        password: password
     });
 
     if (error) {
@@ -46,16 +46,17 @@ async function loginUser(email, password) {
         return;
     }
 
-    // Get user role and redirect accordingly
+    // 🔹 Fetch user role from `users` table
     const { data: userData, error: roleError } = await supabase
-    .from('users')
-    .select('role')
-    .eq('email', email)
-    .limit(1)  // ✅ Ensures only one result is returned
-    .maybeSingle();  // ✅ Prevents errors if no user is found
+        .from('users')
+        .select('role')
+        .eq('email', email)
+        .single();
 
-    if (roleError) {
-        console.error("Role Fetch Error:", roleError.message);
+    // 🔸 Handle missing userData
+    if (roleError || !userData) {
+        console.error("Role Fetch Error:", roleError?.message || "User not found in database");
+        alert("User record not found. Please contact support.");
         return;
     }
 
