@@ -1,5 +1,11 @@
 import { supabase } from './supabaseClient.js';
 
+// Prevent Back Navigation After Logout
+window.history.pushState(null, "", window.location.href);
+window.onpopstate = function () {
+    window.history.pushState(null, "", window.location.href);
+};
+
 // Register User
 async function registerUser(email, password, name) {
     const predefinedAdmins = {
@@ -140,6 +146,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const dashboardPages = ["superadmin_dashboard.html", "admin_dashboard.html", "user_dashboard.html"];
     if (dashboardPages.includes(window.location.pathname.split('/').pop())) {
         checkAuth();
+    }
+
+    // Force logout on `index.html`
+    if (window.location.pathname === "/index.html") {
+        supabase.auth.signOut();
     }
 
     // Register event
