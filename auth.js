@@ -56,11 +56,10 @@ async function loginUser(email, password) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOM fully loaded"); // Debugging check
+    console.log("DOM fully loaded");
 
+    // Check for Register Form
     const registerForm = document.getElementById('register-form');
-    const loginForm = document.getElementById('login-form');
-
     if (registerForm) {
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -71,10 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("Registering:", name, email); // Debugging check
             await registerUser(email, password, name);
         });
-    } else {
-        console.error("❌ Register form not found! Check your HTML file.");
     }
 
+    // Check for Login Form
+    const loginForm = document.getElementById('login-form');
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -84,7 +83,5 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("Logging in:", email); // Debugging check
             await loginUser(email, password);
         });
-    } else {
-        console.error("❌ Login form not found! Check your HTML file.");
     }
 });
