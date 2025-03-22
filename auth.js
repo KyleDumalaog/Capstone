@@ -1,9 +1,10 @@
 import { supabase } from './supabaseClient.js';
 
-// 🔹 Prevent Back Navigation After Logout
+// 🔹 Prevent Back Navigation After Logout & Show Message
 window.history.pushState(null, "", window.location.href);
 window.onpopstate = function () {
-    window.history.pushState(null, "", window.location.href);
+    alert("Session expired! Please log in again."); // ✅ Show message
+    window.location.href = "index.html"; // Redirect to login
 };
 
 // 🔹 Register User
@@ -13,15 +14,15 @@ async function registerUser(email, password, name) {
         "superadmin@example.com": "superadmin"
     };
 
-    let role = "user"; // Default role
+    let role = "user";
     if (predefinedAdmins[email]) {
-        role = predefinedAdmins[email]; // Assign correct role
+        role = predefinedAdmins[email];
     }
 
     const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { email_confirm: true } 
+        options: { email_confirm: true }
     });
 
     if (error) {
@@ -74,7 +75,6 @@ async function loginUser(email, password) {
     console.log("Login Success:", data);
     alert("Login successful!");
 
-    // 🔹 Redirect based on role
     if (userData.role === 'superadmin') {
         window.location.href = "superadmin_dashboard.html";
     } else if (userData.role === 'admin') {
@@ -84,7 +84,7 @@ async function loginUser(email, password) {
     }
 }
 
-// 🔹 Logout User (Works for All Roles)
+// 🔹 Logout User
 async function logoutUser() {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -96,7 +96,7 @@ async function logoutUser() {
     }
 }
 
-// 🔹 Protect Pages: Only Allow Authenticated Users
+// 🔹 Protect Pages: Allow Only Authenticated Users
 async function checkAuth() {
     const { data: user, error } = await supabase.auth.getUser();
     const currentPage = window.location.pathname.split('/').pop();
@@ -105,12 +105,12 @@ async function checkAuth() {
     if (error || !user || !user.user) {
         console.log("Not authenticated, redirecting to login...");
         if (protectedPages.includes(currentPage)) {
+            alert("Session expired! Please log in again."); // ✅ Alert before redirect
             window.location.href = "index.html"; 
         }
         return;
     }
 
-    // Fetch user role from database
     const { data: userData, error: roleError } = await supabase
         .from('users')
         .select('role')
@@ -119,11 +119,11 @@ async function checkAuth() {
 
     if (roleError || !userData) {
         console.log("User not found, redirecting...");
+        alert("Session expired! Please log in again."); // ✅ Alert before redirect
         window.location.href = "index.html";
         return;
     }
 
-    // 🔹 Check if user is allowed on this page
     const allowedRoles = {
         "superadmin_dashboard.html": "superadmin",
         "admin_dashboard.html": "admin",
@@ -138,7 +138,7 @@ async function checkAuth() {
     }
 }
 
-// 🔹 Check Auth & Handle Page Access on Load
+// 🔹 Run Authentication Checks on Page Load
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded");
 
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
         checkAuth();
     }
 
-    // 🔹 Remove Infinite Logout Loop (Only Logout When User Clicks Logout)
+    // 🔹 Logout Button Event Listener
     const logoutBtn = document.getElementById('logout');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', (e) => {
