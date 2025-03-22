@@ -44,7 +44,7 @@ async function registerUser(email, password, name) {
         return;
     }
 
-    alert("Registration successful! You can now log in.");
+    alert("Registration successful! Check your email for confirmation.");
 }
 
 // Login User
