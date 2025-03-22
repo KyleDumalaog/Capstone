@@ -2,14 +2,23 @@ import { supabase } from './supabaseClient.js';
 
 // Register User
 async function registerUser(email, password, name) {
-    const predefinedAdmins = ["admin@example.com", "superadmin@example.com"];
-    if (predefinedAdmins.includes(email)) {
-        alert("This email is reserved. Please contact support.");
-        return;
+    const predefinedAdmins = {
+        "admin@example.com": "admin",
+        "superadmin@example.com": "superadmin"
+    };
+
+    let role = "user"; // Default role
+
+    if (predefinedAdmins[email]) {
+        role = predefinedAdmins[email]; // Assign correct role
     }
 
     // 🔹 Register in Supabase Auth
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { email_confirm: true } // Auto-confirm email
+    });
 
     if (error) {
         console.error("Registration Error:", error.message);
@@ -26,7 +35,7 @@ async function registerUser(email, password, name) {
 
     // 🔹 Insert user into `users` table
     const { error: insertError } = await supabase.from('users').insert([
-        { id: userId, email, name, role: 'user', points: 0 }
+        { id: userId, email, name, role, points: 0 }
     ]);
 
     if (insertError) {
@@ -35,7 +44,7 @@ async function registerUser(email, password, name) {
         return;
     }
 
-    alert("Registration successful! Please check your email.");
+    alert("Registration successful! You can now log in.");
 }
 
 // Login User
