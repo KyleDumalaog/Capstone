@@ -48,17 +48,22 @@ async function loginUser(email, password) {
 
     // 🔹 Fetch user role from `users` table
     const { data: userData, error: roleError } = await supabase
-        .from('users')
-        .select('role')
-        .eq('email', email)
-        .single();
+    .from('users')
+    .select('role')
+    .eq('email', email)
+    .maybeSingle();
 
-    // 🔸 Handle missing userData
-    if (roleError || !userData) {
-        console.error("Role Fetch Error:", roleError?.message || "User not found in database");
-        alert("User record not found. Please contact support.");
-        return;
-    }
+if (roleError) {
+    console.error("Role Fetch Error:", roleError.message);
+    alert("Error fetching user role.");
+    return;
+}
+
+if (!userData) {
+    console.error("No user found with this email.");
+    alert("User not found in database. Please register first.");
+    return;
+}
 
     alert("Login successful!");
 
