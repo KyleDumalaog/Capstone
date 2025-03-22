@@ -2,8 +2,8 @@ import { supabase } from './supabaseClient.js';
 
 async function registerUser(email, password, name) {
     const { data, error } = await supabase.auth.signUp({
-        email: email,
-        password: password
+        email,
+        password
     });
 
     if (error) {
@@ -12,17 +12,16 @@ async function registerUser(email, password, name) {
         return;
     }
 
-    // 🔹 Get user ID from the correct data structure
-    const userId = data?.user?.id;
-
+    // 🔹 Get user ID from the correct structure
+    const userId = data?.user?.id || data?.id;
     if (!userId) {
         console.error("Error: User ID is undefined");
         return;
     }
 
-    // 🔹 Correct insert request
+    // 🔹 Insert into users table (without password)
     const { error: insertError } = await supabase.from('users').insert([
-        { id: userId, email: email, name: name, role: 'user', points: 0 }
+        { id: userId, email, name, role: 'user', points: 0 }
     ]);
 
     if (insertError) {
@@ -32,14 +31,13 @@ async function registerUser(email, password, name) {
     }
 
     alert("Registration successful! Please check your email.");
-}    
-
+}
 
 // Login User
 async function loginUser(email, password) {
     const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password
+        email,
+        password
     });
 
     if (error) {
@@ -72,7 +70,6 @@ async function loginUser(email, password) {
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded");
 
-    // Check for Register Form
     const registerForm = document.getElementById('register-form');
     if (registerForm) {
         registerForm.addEventListener('submit', async (e) => {
@@ -81,12 +78,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            console.log("Registering:", name, email); // Debugging check
+            console.log("Registering:", name, email);
             await registerUser(email, password, name);
         });
     }
 
-    // Check for Login Form
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
@@ -94,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            console.log("Logging in:", email); // Debugging check
+            console.log("Logging in:", email);
             await loginUser(email, password);
         });
     }
