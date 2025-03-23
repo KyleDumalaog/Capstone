@@ -1,84 +1,83 @@
-/* styles.css - General Styles for all pages */
+/* Import Poppins font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: #F4F4F4; /* Example: Light Gray Background */
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0;
 }
 
+/* Container */
 .container {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    background: #FFFFFF; /* White background */
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
-    width: 300px;
+    width: 320px;
 }
 
+/* Logo */
+.logo {
+    width: 80px; /* Adjust the size */
+    margin-bottom: 15px;
+}
+
+/* Headings */
 h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #333; /* Dark text */
     margin-bottom: 20px;
 }
 
-form {
-    display: flex;
-    flex-direction: column;
-}
-
-label {
-    text-align: left;
-    font-size: 14px;
-    margin-bottom: 5px;
-}
-
+/* Input Fields */
 input {
-    padding: 8px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #CCC;
     border-radius: 5px;
 }
 
+/* Buttons */
 button {
-    background: #007bff;
-    color: white;
+    width: 100%;
     padding: 10px;
+    background-color: #007BFF; /* Primary color */
+    color: #FFFFFF;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
+    font-weight: 600;
 }
 
 button:hover {
-    background: #0056b3;
+    background-color: #0056b3; /* Darker shade for hover */
 }
 
+/* Links */
 p {
+    margin-top: 15px;
     font-size: 14px;
 }
 
 a {
-    color: #007bff;
+    color: #007BFF;
     text-decoration: none;
+    font-weight: 600;
 }
 
 a:hover {
     text-decoration: underline;
-}
-
-nav {
-    background: #333;
-    padding: 10px;
-    text-align: center;
-}
-nav a {
-    color: white;
-    text-decoration: none;
-    margin: 0 10px;
-}
-
-.logo {
-    width: 100px;  /* Adjust size as needed */
-    margin-bottom: 10px;
 }
