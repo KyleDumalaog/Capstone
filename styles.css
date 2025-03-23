@@ -77,3 +77,8 @@ nav a {
     text-decoration: none;
     margin: 0 10px;
 }
+
+.logo {
+    width: 100px;  /* Adjust size as needed */
+    margin-bottom: 10px;
+}
