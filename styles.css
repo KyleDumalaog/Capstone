@@ -1,7 +1,7 @@
 /* Import Poppins font from Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
-/* Global Styles */
+/* 🔹 Global Styles */
 * {
     margin: 0;
     padding: 0;
@@ -11,60 +11,64 @@
 
 /* 🔹 Center Everything */
 body {
-    background-color: #FFFFFF; /* Light gray background */
+    background-color: #FFFFFF;
     display: flex;
     flex-direction: column; /* Stack logo + container */
     justify-content: center;
     align-items: center;
     height: 100vh;
+    padding: 20px; /* Added padding for smaller screens */
 }
 
-/* Logo */
+/* 🔹 Logo */
 .logo {
-    width: 100px; /* Adjust the size */
-    margin-bottom: 15px;
+    width: 20vw; /* Make the logo responsive based on viewport width */
+    max-width: 600px; /* Prevent the logo from getting too big */
+    min-width: 300px; /* Prevent the logo from getting too small */
+    height: auto; /* Maintain aspect ratio */
+    margin-bottom: -30px; /* Adjust spacing */
 }
 
-/* Container */
+/* 🔹 Logo Container */
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px; /* Space between logo & form */
+}
+
+/* 🔹 Form Container */
 .container {
-    background: #6faf3b; /* White background */
+    background: #6faf3b; /* Primary color */
     padding: 2rem;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
-    width: 320px;
+    width: 90%; /* Use percentage for responsiveness */
+    max-width: 400px; /* Prevent it from getting too wide */
     color: #FFFFFF;
 }
 
+/* 🔹 Form Heading */
 .container h2 {
     color: #FFFFFF;
-    font-size: 25px;
+    font-size: 22px;
     font-weight: 600;
     margin-bottom: 20px;
-}
-
-/* 🔹 Add spacing between inputs and button */
-.container input {
-    margin-bottom: 15px; /* Adjust spacing between input fields */
-    padding: 10px; /* Ensure padding inside inputs */
-}
-
-/* 🔹 Add spacing for the button */
-.container button {
-    margin-top: 20px; /* Space between last input and button */
-    padding: 12px; /* Improve button padding */
 }
 
 /* 🔹 Input Fields */
 .container input {
     width: 100%;
-    border: 1px solid transparent; /* Default border */
+    border: 1px solid transparent;
     border-radius: 12px;
-    font-size: 12px;
+    font-size: 14px;
     background-color: #fff;
     color: #666;
     outline: none;
+    padding: 12px; /* Increased padding */
     transition: border 0.3s ease;
+    margin-bottom: 15px; /* Adjusted spacing */
 }
 
 /* 🔹 Placeholder Styling */
@@ -75,28 +79,28 @@ body {
 
 /* 🔹 Focus Effect */
 .container input:focus {
-    border: 2px solid #e4f0a0; /* Change this color to match your theme */
+    border: 2px solid #e4f0a0;
 }
 
-
-/* container Buttons register/login */
+/* 🔹 Button Styling */
 .container button {
     width: 100%;
-    padding: 10px;
-    background-color: #e4f0a0; /* Primary color */
+    padding: 12px;
+    background-color: #e4f0a0;
     color: #349e00;
     border: none;
     border-radius: 12px;
     cursor: pointer;
     font-weight: 600;
+    margin-top: 15px; /* Added spacing */
 }
 
 .container button:hover {
-    background-color: #349e00; /* Darker shade for hover */
+    background-color: #349e00;
     color: #FFFFFF;
 }
 
-/* Links */
+/* 🔹 Links */
 .container p {
     margin-top: 15px;
     font-size: 14px;
@@ -112,6 +116,29 @@ body {
     text-decoration: underline;
 }
 
-.logo-container{
-        margin-bottom: 20px; /* Space between logo & form */
+/* 🔹 Responsiveness */
+@media (max-width: 480px) {
+    body {
+        padding: 15px;
+    }
+
+    .logo {
+        width: 35vw; /* Increase size relative to smaller screens */
+        min-width: 300px; /* Avoid too small */
+        max-width: 500px; /* Prevent it from being too large */
+        margin-bottom: -20px;
+    }
+
+    .container {
+        padding: 1.5rem; /* Reduce padding */
+    }
+
+    .container input {
+        padding: 10px;
+        font-size: 12px;
+    }
+
+    .container button {
+        padding: 10px;
+    }
 }
