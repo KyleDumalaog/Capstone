@@ -1,11 +1,18 @@
 import { supabase } from './supabaseClient.js';
 
-// 🔹 Prevent Back Navigation After Logout & Show Message
+// 🔹 Prevent Back Navigation After Logout
 window.history.pushState(null, "", window.location.href);
 window.onpopstate = function () {
     alert("Session expired! Please log in again."); // ✅ Show message
-    window.location.href = "index.html"; // Redirect to login
+    window.location.replace("index.html"); // ✅ Redirect & replace history
 };
+
+// 🔹 Fix for Safari & Mobile: Force Reload on Back Button
+window.addEventListener("pageshow", function (event) {
+    if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+        location.reload(true);
+    }
+});
 
 // 🔹 Register User
 async function registerUser(email, password, name) {
@@ -102,7 +109,13 @@ async function logoutUser() {
     console.log("Logout successful, session cleared.");
     alert("You have been logged out."); // ✅ Show logout message
 
-    window.location.href = "index.html"; // Redirect to login page
+    // 🔹 Prevent back button access
+    setTimeout(() => {
+        window.location.replace("index.html"); // ✅ Redirect & replace history
+    }, 100);
+
+    // 🔹 Push new history state to block back navigation
+    history.pushState(null, "", "index.html");
 }
 
 
