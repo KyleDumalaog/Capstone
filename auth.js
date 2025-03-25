@@ -127,20 +127,18 @@ async function logoutUser() {
 
 // 🔹 Protect Pages: Allow Only Authenticated Users
 async function checkAuth() {
-    const { data: user, error } = await supabase.auth.getUser();
-    const currentPage = window.location.pathname.split('/').pop();
-    const protectedPages = ["superadmin_dashboard.html", "admin_dashboard.html", "user_dashboard.html", "history.html", "rewards.html"];
-
-    if (error || !user || !user.user) {
-        console.log("Not authenticated, redirecting to login...");
-        if (protectedPages.includes(currentPage)) {
-            alert("Session expired! Please log in again."); // ✅ Alert before redirect
-            window.location.href = "index.html"; 
-        }
+    const { data: { session }, error } = await supabase.auth.getSession();
+    
+    if (error || !session) {
+        console.log("User not authenticated. Redirecting...");
+        window.location.href = "index.html";
         return;
     }
 
-    const { data: userData, error: roleError } = await supabase
+    console.log("User authenticated:", session);
+}
+
+   /* const { data: userData, error: roleError } = await supabase
         .from('users')
         .select('role')
         .eq('id', user.user.id)
@@ -165,7 +163,7 @@ async function checkAuth() {
         alert("Unauthorized access!");
         window.location.href = "index.html";
     }
-}
+}*/
 
 // 🔹 Run Authentication Checks on Page Load
 document.addEventListener('DOMContentLoaded', () => {
