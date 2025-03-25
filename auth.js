@@ -44,7 +44,7 @@ async function registerUser(email, password, name) {
         return;
     }
 
-    const { error: insertError } = await supabase.from('public.users').insert([
+    const { error: insertError } = await supabase.from('users').insert([
         { id: userId, email, name, role, points: 0 }
     ]);
 
@@ -68,7 +68,7 @@ async function loginUser(email, password) {
     }
 
     const { data: userData, error: roleError } = await supabase
-        .from('public.users')
+        .from('users')
         .select('role')
         .eq('email', email)
         .maybeSingle();
@@ -135,7 +135,7 @@ async function checkAuth() {
     }
 
     const { data: userData, error: roleError } = await supabase
-        .from('public.users')
+        .from('users')
         .select('role')
         .eq('id', user.user.id)
         .maybeSingle();
