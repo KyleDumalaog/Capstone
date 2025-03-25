@@ -3,8 +3,8 @@ import { supabase } from './supabaseClient.js';
 // 🔹 Prevent Back Navigation After Logout
 window.history.pushState(null, "", window.location.href);
 window.onpopstate = function () {
-    alert("Session expired! Please log in again."); // ✅ Show message
-    window.location.replace("index.html"); // ✅ Redirect & replace history
+    alert("Session expired! Please log in again.");
+    window.location.replace("index.html");
 };
 
 // 🔹 Fix for Safari & Mobile: Force Reload on Back Button
@@ -21,10 +21,7 @@ async function registerUser(email, password, name) {
         "superadmin@example.com": "superadmin"
     };
 
-    let role = "user";
-    if (predefinedAdmins[email]) {
-        role = predefinedAdmins[email];
-    }
+    let role = predefinedAdmins[email] || "user"; // Default to "user" if not an admin
 
     const { data, error } = await supabase.auth.signUp({
         email,
@@ -44,6 +41,7 @@ async function registerUser(email, password, name) {
         return;
     }
 
+    // 🔹 Insert User Data
     const { error: insertError } = await supabase.from('users').insert([
         { id: userId, email, name, role, points: 0 }
     ]);
@@ -67,7 +65,7 @@ async function loginUser(email, password) {
         return;
     }
 
-    // 🔹 Fetch role correctly
+    // 🔹 Fetch authenticated user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
@@ -75,13 +73,13 @@ async function loginUser(email, password) {
         alert("Authentication failed. Please try again.");
         return;
     }
-    
+
+    // 🔹 Fetch user role using ID (not email)
     const { data: userData, error: roleError } = await supabase
         .from('users')
         .select('role')
-        .eq('id', user.id)  // ✅ Correct: Query using the authenticated user's ID.
+        .eq('id', user.id)
         .maybeSingle();
-    
 
     if (roleError) {
         console.error("Role Fetch Error:", roleError.message);
@@ -98,6 +96,7 @@ async function loginUser(email, password) {
     console.log("Login Success:", data);
     alert("Login successful!");
 
+    // 🔹 Redirect Based on Role
     if (userData.role === 'superadmin') {
         window.location.href = "superadmin_dashboard.html";
     } else if (userData.role === 'admin') {
@@ -106,7 +105,6 @@ async function loginUser(email, password) {
         window.location.href = "user_dashboard.html";
     }
 }
-
 
 // 🔹 Logout User (Force Session Expiration)
 async function logoutUser() {
@@ -124,17 +122,14 @@ async function logoutUser() {
     document.cookie = ""; // Clear cookies if used
 
     console.log("Logout successful, session cleared.");
-    alert("You have been logged out."); // ✅ Show logout message
+    alert("You have been logged out.");
 
-    // 🔹 Prevent back button access
+    // 🔹 Redirect and prevent back button access
     setTimeout(() => {
-        window.location.replace("index.html"); // ✅ Redirect & replace history
+        window.location.replace("index.html");
     }, 100);
-
-    // 🔹 Push new history state to block back navigation
     history.pushState(null, "", "index.html");
 }
-
 
 // 🔹 Protect Pages: Allow Only Authenticated Users
 async function checkAuth() {
@@ -146,7 +141,7 @@ async function checkAuth() {
         console.log("Not authenticated, redirecting...");
         if (protectedPages.includes(currentPage)) {
             alert("Session expired! Please log in again.");
-            window.location.href = "index.html"; 
+            window.location.href = "index.html";
         }
         return;
     }
@@ -186,7 +181,6 @@ async function checkAuth() {
     }
 }
 
-
 // 🔹 Run Authentication Checks on Page Load
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded");
@@ -198,39 +192,25 @@ document.addEventListener('DOMContentLoaded', () => {
         checkAuth();
     }
 
-    // 🔹 Logout Button Event Listener
-    const logoutBtn = document.getElementById('logout');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            logoutUser();
-        });
-    }
+    document.getElementById('logout')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        logoutUser();
+    });
 
-    // 🔹 Register Form Submission
-    const registerForm = document.getElementById('register-form');
-    if (registerForm) {
-        registerForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+    document.getElementById('register-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await registerUser(
+            document.getElementById('name').value,
+            document.getElementById('email').value,
+            document.getElementById('password').value
+        );
+    });
 
-            console.log("Registering:", name, email);
-            await registerUser(email, password, name);
-        });
-    }
-
-    // 🔹 Login Form Submission
-    const loginForm = document.getElementById('login-form');
-    if (loginForm) {
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            console.log("Logging in:", email);
-            await loginUser(email, password);
-        });
-    }
+    document.getElementById('login-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await loginUser(
+            document.getElementById('email').value,
+            document.getElementById('password').value
+        );
+    });
 });
