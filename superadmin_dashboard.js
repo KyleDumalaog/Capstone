@@ -36,10 +36,9 @@ document.getElementById('add-admin')?.addEventListener('click', () => {
 async function fetchUsers() {
     console.log("🔄 Fetching all users...");
 
-    // Fetch ONLY the columns that exist
     const { data: users, error } = await supabase
         .from('users')
-        .select('id, name, email, phone, created_at'); // Removed fields that may not exist
+        .select('id, name, email, phone, created_at');
 
     if (error) {
         console.error("❌ Error fetching users:", error);
@@ -48,6 +47,9 @@ async function fetchUsers() {
     }
 
     console.log("✅ Users fetched:", users);
+
+    // Call a function to update the UI
+    displayUsers(users);
 }
 
 
@@ -79,6 +81,26 @@ async function logout() {
         alert("Logged out successfully!");
         window.location.href = "index.html";
     }
+
+}
+function displayUsers(users) {
+    const userTable = document.getElementById('user-table');
+    userTable.innerHTML = ""; // Clear previous rows
+
+    users.forEach(user => {
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+            <td>${user.id}</td>
+            <td>${user.name || 'N/A'}</td>
+            <td>${user.email}</td>
+            <td>${user.phone || 'N/A'}</td>
+            <td>${user.created_at}</td>
+            <td><button onclick="removeUser('${user.id}')">Remove</button></td>
+        `;
+
+        userTable.appendChild(row);
+    });
 }
 
 // 🔹 Event Listeners
@@ -87,4 +109,8 @@ document.getElementById('change-password')?.addEventListener('click', changeSupe
 document.getElementById('logout')?.addEventListener('click', logout);
 
 // Check if user is superadmin on page load
-document.addEventListener('DOMContentLoaded', checkSuperAdmin);
+document.addEventListener('DOMContentLoaded', () => {
+    checkSuperAdmin(); // Check if user is a superadmin
+    fetchUsers(); // Fetch and display users
+});
+
