@@ -31,6 +31,7 @@ async function registerUser(email, password, name) {
         return;
     }
 
+    // ✅ Ensure the Supabase Auth Token is included
     const { error: insertError } = await supabase
         .from("users")
         .upsert([{ 
@@ -39,7 +40,8 @@ async function registerUser(email, password, name) {
             name, 
             role: "user", 
             points: 0 
-        }], { onConflict: ['id'] });
+        }], { onConflict: ['id'] })
+        .select("*");  // Force response for debugging
 
     if (insertError) {
         console.error("Upsert Error:", insertError.message);
