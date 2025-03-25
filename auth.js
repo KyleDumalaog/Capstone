@@ -16,19 +16,9 @@ window.addEventListener("pageshow", function (event) {
 
 // 🔹 Register User
 async function registerUser(email, password, name) {
-    const predefinedAdmins = {
-        "admin@example.com": "admin",
-        "superadmin@example.com": "superadmin"
-    };
-
-    let role = "user";
-    if (predefinedAdmins[email]) {
-        role = predefinedAdmins[email];
-    }
-
     const { data, error } = await supabase.auth.signUp({
         email,
-        password,
+        password,  // ✅ Ensure password is included
         options: { email_confirm: true }
     });
 
@@ -45,17 +35,17 @@ async function registerUser(email, password, name) {
     }
 
     const { error: insertError } = await supabase.from('users').insert([
-        { id: userId, email, name, role, points: 0 }
+        { id: userId, email, name, role: "user", points: 0 }
     ]);
 
     if (insertError) {
         console.error("Insert Error:", insertError.message);
         alert(`Insert failed: ${insertError.message}`);
-        return;
+    } else {
+        alert("Registration successful! Check your email for confirmation.");
     }
-
-    alert("Registration successful! Check your email for confirmation.");
 }
+
 
 // 🔹 Login User
 async function loginUser(email, password) {
@@ -189,10 +179,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-
-            console.log("Registering:", name, email);
+        
+            console.log("Registering:", { name, email, password }); // ✅ Debug log
+        
+            if (!email || !password) {
+                alert("Email and Password are required.");
+                return;
+            }
+        
             await registerUser(email, password, name);
         });
+        
     }
 
     // 🔹 Login Form Submission
