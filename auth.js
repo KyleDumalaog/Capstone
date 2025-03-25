@@ -14,18 +14,29 @@ window.addEventListener("pageshow", function (event) {
     }
 });
 
+// 🔹 Function to Validate Email Format
+function isValidEmail(email) {
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailPattern.test(email);
+}
+
 // 🔹 Register User
 async function registerUser(email, password, name) {
+    if (!isValidEmail(email)) {
+        alert("Invalid email format! Please enter a valid email.");
+        return;
+    }
+
     const predefinedAdmins = {
         "admin@example.com": "admin",
         "superadmin@example.com": "superadmin"
     };
 
-    let role = predefinedAdmins[email] || "user"; // Default to "user" if not an admin
+    let role = predefinedAdmins[email] || "user";
 
     const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
+        email: email.trim(), // 🔹 Trim spaces
+        password: password.trim(),
         options: { email_confirm: true }
     });
 
@@ -41,9 +52,8 @@ async function registerUser(email, password, name) {
         return;
     }
 
-    // 🔹 Insert User Data
     const { error: insertError } = await supabase.from('users').insert([
-        { id: userId, email, name, role, points: 0 }
+        { id: userId, email: email.trim(), name: name.trim(), role, points: 0 }
     ]);
 
     if (insertError) {
