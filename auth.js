@@ -123,7 +123,8 @@ async function logoutUser() {
 // 🔹 Protect Pages: Allow Only Authenticated Users
 async function checkAuth() { 
     const { data: { session }, error } = await supabase.auth.getSession();
-    
+    console.log('Session:', session);  // Log session data
+
     if (error || !session || !session.user) {
         console.log("User not authenticated. Redirecting...");
         window.location.href = "index.html";
@@ -137,11 +138,13 @@ async function checkAuth() {
         .maybeSingle();
 
     if (roleError || !userData) {
-        console.log("User not found, redirecting...");
+        console.log("User not found or role error, redirecting...");
         alert("Session expired! Please log in again.");
         window.location.href = "index.html";
         return;
     }
+
+    console.log('User Role:', userData.role);  // Log the user's role
 
     const currentPage = window.location.pathname.split('/').pop();  // ✅ Added this line
 
@@ -158,6 +161,7 @@ async function checkAuth() {
         window.location.href = "index.html";
     }
 }
+
 
 
 // 🔹 Run Authentication Checks on Page Load
