@@ -18,8 +18,7 @@ window.addEventListener("pageshow", function (event) {
 async function registerUser(email, password, name) {
     const { data, error } = await supabase.auth.signUp({
         email,
-        password, // ✅ Password is handled by Supabase Auth
-        options: { email_confirm: true }
+        password
     });
 
     if (error) {
@@ -28,24 +27,31 @@ async function registerUser(email, password, name) {
         return;
     }
 
-    const userId = data?.user?.id;
+    const userId = data.user?.id; // ✅ Get the authenticated user ID
     if (!userId) {
         console.error("Error: User ID is undefined");
         return;
     }
 
-    // ✅ Insert only metadata (no password)
-    const { error: insertError } = await supabase.from('users').insert([
-        { id: userId, email, name, role: "user", points: 0 }
-    ]);
+    const { error: insertError } = await supabase
+        .from("users")
+        .insert([{ 
+            id: userId,  // ✅ Ensure ID matches auth.uid()
+            email, 
+            name, 
+            role: "user", 
+            points: 0 
+        }]);
 
     if (insertError) {
         console.error("Insert Error:", insertError.message);
         alert(`Insert failed: ${insertError.message}`);
-    } else {
-        alert("Registration successful! Check your email for confirmation.");
+        return;
     }
+
+    alert("Registration successful! Check your email for confirmation.");
 }
+
 
 
 // 🔹 Login User
