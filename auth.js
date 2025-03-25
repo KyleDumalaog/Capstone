@@ -24,31 +24,32 @@ async function registerUser(email, password, name) {
         return;
     }
 
-    // 🔹 Code 3: Fetch the authenticated user
+    // 🔹 Fetch the authenticated user after signing up
     const { data: userData, error: userError } = await supabase.auth.getUser();
 
-    if (userError || !userData || !userData.user) {
+    if (userError || !userData?.user) {
         console.error("Error fetching user:", userError?.message || "User not found");
         alert("User registration failed, please try again.");
         return;
     }
 
-    const userId = userData.user.id; // ✅ Now we have a valid userId
+    const userId = userData.user.id;
     console.log("Authenticated User ID:", userId); // ✅ Debug log
 
-    // 🔹 Insert user into "users" table
-    const { error: insertError } = await supabase
+    // 🔹 Use upsert to prevent duplicate insertion
+    const { error: upsertError } = await supabase
         .from("users")
-        .insert([{ id: userId, email, name, role: "user", points: 0 }]);
+        .upsert([{ id: userId, email, name, role: "user", points: 0 }], { onConflict: ['id'] });
 
-    if (insertError) {
-        console.error("Insert Error:", insertError.message);
-        alert("Insert failed: " + insertError.message);
+    if (upsertError) {
+        console.error("Upsert Error:", upsertError.message);
+        alert("Upsert failed: " + upsertError.message);
         return;
     }
 
     alert("Registration successful! Check your email for confirmation.");
 }
+
 
 
 
