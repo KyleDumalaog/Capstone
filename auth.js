@@ -16,6 +16,7 @@ window.addEventListener("pageshow", function (event) {
 
 // 🔹 Register User
 async function registerUser(email, password, name) {
+    // 🔹 Step 1: Register the user
     const { data, error } = await supabase.auth.signUp({ email, password });
 
     if (error) {
@@ -31,7 +32,15 @@ async function registerUser(email, password, name) {
         return;
     }
 
-    // ✅ Ensure the Supabase Auth Token is included
+    // 🔹 Step 2: Ensure the user is authenticated before inserting into "users" table
+    const { data: authUser, error: authError } = await supabase.auth.getUser();
+    if (authError || !authUser.user) {
+        console.error("User not authenticated:", authError);
+        alert("You must be logged in to perform this action.");
+        return;
+    }
+
+    // 🔹 Step 3: Insert user details into "users" table
     const { error: insertError } = await supabase
         .from("users")
         .upsert([{ 
@@ -40,8 +49,7 @@ async function registerUser(email, password, name) {
             name, 
             role: "user", 
             points: 0 
-        }], { onConflict: ['id'] })
-        .select("*");  // Force response for debugging
+        }], { onConflict: ['id'] });
 
     if (insertError) {
         console.error("Upsert Error:", insertError.message);
@@ -51,6 +59,7 @@ async function registerUser(email, password, name) {
 
     alert("Registration successful! Check your email for confirmation.");
 }
+
 
 
 // 🔹 Login User
