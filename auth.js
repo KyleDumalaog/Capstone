@@ -16,44 +16,34 @@ window.addEventListener("pageshow", function (event) {
 
 // 🔹 Register User
 async function registerUser(email, password, name) {
-    const { data, error } = await supabase.auth.signUp({
-        email,
-        password
-    });
+    const { data, error } = await supabase.auth.signUp({ email, password });
 
     if (error) {
         console.error("Registration Error:", error.message);
-        alert(error.message);
+        alert("Error: " + error.message);
         return;
     }
 
-    // ✅ Ensure userId is correctly assigned
-    const userId = data.user?.id; 
+    const userId = data.user?.id;
     if (!userId) {
         console.error("Error: User ID is undefined");
         alert("User registration failed, please try again.");
         return;
     }
 
-    // ✅ Now we can insert into the users table
     const { error: insertError } = await supabase
         .from("users")
-        .insert([{ 
-            id: userId,  // ✅ This should now be correctly set
-            email, 
-            name, 
-            role: "user", 
-            points: 0 
-        }]);
+        .insert([{ id: userId, email, name, role: "user", points: 0 }]);
 
     if (insertError) {
         console.error("Insert Error:", insertError.message);
-        alert(`Insert failed: ${insertError.message}`);
+        alert("Insert failed: " + insertError.message);
         return;
     }
 
     alert("Registration successful! Check your email for confirmation.");
 }
+
 
 
 
