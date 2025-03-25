@@ -11,14 +11,14 @@
 
     <div class="toolbar">
         <input type="text" id="search" placeholder="Search email or UID">
-        <button id="refresh">Refresh</button>  <!-- ✅ Fixed Refresh Button -->
+        <button id="refresh">Refresh</button>  <!-- ✅ Added event listener in JS -->
         <button id="add-user">Add User</button>
         <button id="add-admin">Add Admin</button>
         <button id="change-password">Change Password</button>
         <button id="logout">Logout</button>
     </div>
 
-    <table>
+    <table id="user-table-container">  <!-- ✅ Ensuring ID exists -->
         <thead>
             <tr>
                 <th>UID</th>
@@ -28,12 +28,12 @@
                 <th>Providers</th>
                 <th>Created At</th>
                 <th>Last Login</th>
-                <th>Status</th>  <!-- ✅ Added Status Column -->
+                <th>Status</th>  
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody id="user-table">
-            <!-- Users will be loaded here dynamically -->
+            <!-- Users will be dynamically added here -->
         </tbody>
     </table>
 
