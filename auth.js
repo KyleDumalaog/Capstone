@@ -17,7 +17,6 @@ window.addEventListener("pageshow", function (event) {
 
 // 🔹 Register User
 async function registerUser(email, password, name) {
-    // 🔹 Step 1: Register the user
     const { data, error } = await supabase.auth.signUp({ email, password });
 
     if (error) {
@@ -26,6 +25,8 @@ async function registerUser(email, password, name) {
         return;
     }
 
+    console.log("User registered:", data);
+
     const userId = data.user?.id;
     if (!userId) {
         console.error("Error: User ID is undefined");
@@ -33,15 +34,9 @@ async function registerUser(email, password, name) {
         return;
     }
 
-    // 🔹 Step 2: Ensure the user is authenticated before inserting into "users" table
-    const { data: authUser, error: authError } = await supabase.auth.getUser();
-    if (authError || !authUser.user) {
-        console.error("User not authenticated:", authError);
-        alert("You must be logged in to perform this action.");
-        return;
-    }
+    // Wait for authentication session to be established
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    // 🔹 Step 3: Insert user details into "users" table
     const { error: insertError } = await supabase
         .from("users")
         .upsert([{ 
