@@ -22,51 +22,15 @@ async function checkSuperAdmin() {
     }
 }
 
-// 🔹 Add User Function
-async function addUser() {
-    const email = prompt("Enter user email:");
-    const password = prompt("Enter a password (min 6 characters):");
-    const name = prompt("Enter user name:");
-    const role = prompt("Enter role (user/admin):").toLowerCase();
+// 🔹 Redirect to Add User Page
+document.getElementById('add-user')?.addEventListener('click', () => {
+    window.location.href = "add_user.html";
+});
 
-    if (!email || !password || !name || !role) {
-        alert("All fields are required!");
-        return;
-    }
-
-    if (role !== "user" && role !== "admin") {
-        alert("Invalid role! Choose either 'user' or 'admin'.");
-        return;
-    }
-
-    const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { email_confirm: true }
-    });
-
-    if (error) {
-        console.error("Error adding user:", error);
-        alert(error.message);
-        return;
-    }
-
-    const userId = data?.user?.id;
-    if (!userId) {
-        alert("User creation failed.");
-        return;
-    }
-
-    const { error: insertError } = await supabase.from('users').insert([
-        { id: userId, email, name, role, points: 0 }
-    ]);
-
-    if (insertError) {
-        alert("Failed to add user: " + insertError.message);
-    } else {
-        alert("User added successfully!");
-    }
-}
+// 🔹 Redirect to Add Admin Page
+document.getElementById('add-admin')?.addEventListener('click', () => {
+    window.location.href = "add_admin.html";
+});
 
 // 🔹 Remove User Function
 async function removeUser() {
@@ -132,8 +96,8 @@ async function logout() {
 }
 
 // 🔹 Event Listeners
-document.getElementById('add-user')?.addEventListener('click', addUser);
 document.getElementById('remove-user')?.addEventListener('click', removeUser);
+document.getElementById('change-password')?.addEventListener('click', changeSuperAdminPassword);
 document.getElementById('logout')?.addEventListener('click', logout);
 
 // Check if user is superadmin on page load
