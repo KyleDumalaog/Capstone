@@ -2,21 +2,22 @@ import { supabase } from './supabaseClient.js';
 
 // 🔹 Ensure Super Admin is Authenticated
 async function checkSuperAdmin() {
-    const { data: user, error } = await supabase.auth.getUser();
-
-    if (error || !user || !user.user) {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    
+    if (error || !user) {
         alert("Unauthorized access! Redirecting...");
         window.location.href = "index.html";
         return;
     }
 
-    const { data: userData, error: roleError } = await supabase
-        .from('users')
+    // ✅ Query 'auth.users' instead of 'users'
+    const { data: roleData, error: roleError } = await supabase
+        .from('auth.users')
         .select('role')
-        .eq('id', user.user.id)
+        .eq('id', user.id)
         .maybeSingle();
 
-    if (roleError || !userData || userData.role !== 'superadmin') {
+    if (roleError || !roleData || roleData.role !== 'superadmin') {
         alert("Unauthorized access! Redirecting...");
         window.location.href = "index.html";
     }
