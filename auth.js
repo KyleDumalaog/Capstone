@@ -24,13 +24,19 @@ async function registerUser(email, password, name) {
         return;
     }
 
-    const userId = data.user?.id;
-    if (!userId) {
-        console.error("Error: User ID is undefined");
+    // 🔹 Code 3: Fetch the authenticated user
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+
+    if (userError || !userData || !userData.user) {
+        console.error("Error fetching user:", userError?.message || "User not found");
         alert("User registration failed, please try again.");
         return;
     }
 
+    const userId = userData.user.id; // ✅ Now we have a valid userId
+    console.log("Authenticated User ID:", userId); // ✅ Debug log
+
+    // 🔹 Insert user into "users" table
     const { error: insertError } = await supabase
         .from("users")
         .insert([{ id: userId, email, name, role: "user", points: 0 }]);
@@ -43,7 +49,6 @@ async function registerUser(email, password, name) {
 
     alert("Registration successful! Check your email for confirmation.");
 }
-
 
 
 
