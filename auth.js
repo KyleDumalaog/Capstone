@@ -125,13 +125,13 @@ async function logoutUser() {
 // 🔹 Protect Pages: Allow Only Authenticated Users
 async function checkAuth() { 
     const { data: { session }, error } = await supabase.auth.getSession();
-    console.log("Session data:", session);  // Log session data to check if it's valid
 
-    if (error || !session || !session.user) {
-        console.log("User not authenticated. Redirecting...");
-        window.location.href = "index.html"; // Redirect to login page
-        return;
-    }
+if (error || !session || !session.user) {
+    console.log("User not authenticated or session expired. Redirecting...");
+    window.location.href = "index.html"; // Redirect to login page
+    return;
+}
+
 
     // Fetch user role
     const { data: userData, error: roleError } = await supabase
