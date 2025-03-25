@@ -1,4 +1,4 @@
-import { supabase } from './supabaseClient.js';
+import { supabase } from "./supabaseClient.js";
 
 async function checkUserAuthenticated() {
     const { data: user, error } = await supabase.auth.getUser();

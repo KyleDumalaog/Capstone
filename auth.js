@@ -1,4 +1,5 @@
-import { supabase } from './supabaseClient.js';
+import { supabase } from "./supabaseClient.js";
+
 
 // 🔹 Prevent Back Navigation After Logout
 window.history.pushState(null, "", window.location.href);
