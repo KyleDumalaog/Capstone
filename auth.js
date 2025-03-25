@@ -67,15 +67,22 @@ async function loginUser(email, password) {
         return;
     }
 
+    // 🔹 Fetch role correctly
     const { data: userData, error: roleError } = await supabase
         .from('users')
         .select('role')
         .eq('email', email)
         .maybeSingle();
 
-    if (roleError || !userData) {
-        console.error("Role Fetch Error:", roleError?.message);
-        alert("Error fetching user role or user does not exist.");
+    if (roleError) {
+        console.error("Role Fetch Error:", roleError.message);
+        alert("Error fetching user role.");
+        return;
+    }
+
+    if (!userData || !userData.role) {
+        console.error("User role not found");
+        alert("User role not found.");
         return;
     }
 
@@ -90,6 +97,7 @@ async function loginUser(email, password) {
         window.location.href = "user_dashboard.html";
     }
 }
+
 
 // 🔹 Logout User (Force Session Expiration)
 async function logoutUser() {
@@ -121,28 +129,36 @@ async function logoutUser() {
 
 // 🔹 Protect Pages: Allow Only Authenticated Users
 async function checkAuth() {
-    const { data: user, error } = await supabase.auth.getUser();
+    const { data: { user }, error } = await supabase.auth.getUser();
     const currentPage = window.location.pathname.split('/').pop();
     const protectedPages = ["superadmin_dashboard.html", "admin_dashboard.html", "user_dashboard.html", "history.html", "rewards.html"];
 
-    if (error || !user || !user.user) {
-        console.log("Not authenticated, redirecting to login...");
+    if (error || !user) {
+        console.log("Not authenticated, redirecting...");
         if (protectedPages.includes(currentPage)) {
-            alert("Session expired! Please log in again."); // ✅ Alert before redirect
+            alert("Session expired! Please log in again.");
             window.location.href = "index.html"; 
         }
         return;
     }
 
+    // 🔹 Fetch user role
     const { data: userData, error: roleError } = await supabase
         .from('users')
         .select('role')
-        .eq('id', user.user.id)
+        .eq('id', user.id)
         .maybeSingle();
 
-    if (roleError || !userData) {
-        console.log("User not found, redirecting...");
-        alert("Session expired! Please log in again."); // ✅ Alert before redirect
+    if (roleError) {
+        console.error("Role Fetch Error:", roleError.message);
+        alert("Error fetching user role.");
+        window.location.href = "index.html";
+        return;
+    }
+
+    if (!userData || !userData.role) {
+        console.log("User role missing, redirecting...");
+        alert("Session expired! Please log in again.");
         window.location.href = "index.html";
         return;
     }
@@ -160,6 +176,7 @@ async function checkAuth() {
         window.location.href = "index.html";
     }
 }
+
 
 // 🔹 Run Authentication Checks on Page Load
 document.addEventListener('DOMContentLoaded', () => {
