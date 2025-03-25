@@ -49,21 +49,19 @@ async function removeUser() {
         return;
     }
 
-    // Delete from authentication
-    const { error: authError } = await supabase.auth.admin.deleteUser(userData.id);
-    if (authError) {
-        alert("Failed to delete user from authentication: " + authError.message);
-        return;
-    }
+    // 🔹 Instead of deleting, mark user as 'inactive' (safer method)
+    const { error: dbError } = await supabase
+        .from('users')
+        .update({ status: 'inactive' }) // Ensure you have a 'status' column
+        .eq('email', email);
 
-    // Delete from users table
-    const { error: dbError } = await supabase.from('users').delete().eq('email', email);
     if (dbError) {
-        alert("Failed to delete user from database: " + dbError.message);
+        alert("Failed to deactivate user: " + dbError.message);
     } else {
-        alert("User removed successfully!");
+        alert("User removed (deactivated) successfully!");
     }
 }
+
 
 // 🔹 Change Super Admin Password
 async function changeSuperAdminPassword() {
