@@ -18,7 +18,7 @@ window.addEventListener("pageshow", function (event) {
 async function registerUser(email, password, name) {
     const { data, error } = await supabase.auth.signUp({
         email,
-        password,  // ✅ Ensure password is included
+        password, // ✅ Password is handled by Supabase Auth
         options: { email_confirm: true }
     });
 
@@ -34,6 +34,7 @@ async function registerUser(email, password, name) {
         return;
     }
 
+    // ✅ Insert only metadata (no password)
     const { error: insertError } = await supabase.from('users').insert([
         { id: userId, email, name, role: "user", points: 0 }
     ]);
