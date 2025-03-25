@@ -14,56 +14,43 @@ window.addEventListener("pageshow", function (event) {
     }
 });
 
-// 🔹 Function to Validate Email Format
+// 🔹 Validate Email Function  
 function isValidEmail(email) {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailPattern.test(email);
 }
 
-// 🔹 Register User
+// 🔹 Register User  
 async function registerUser(email, password, name) {
+    email = email.trim().toLowerCase();   // 🔹 Trim & ensure lowercase  
+    password = password.trim();  
+    name = name.trim();  
+
     if (!isValidEmail(email)) {
         alert("Invalid email format! Please enter a valid email.");
         return;
     }
 
-    const predefinedAdmins = {
-        "admin@example.com": "admin",
-        "superadmin@example.com": "superadmin"
-    };
+    try {
+        const { data, error } = await supabase.auth.signUp({
+            email,
+            password
+        });
 
-    let role = predefinedAdmins[email] || "user";
+        if (error) {
+            console.error("Registration Error:", error.message);
+            alert(`Error: ${error.message}`);
+            return;
+        }
 
-    const { data, error } = await supabase.auth.signUp({
-        email: email.trim(), // 🔹 Trim spaces
-        password: password.trim(),
-        options: { email_confirm: true }
-    });
-
-    if (error) {
-        console.error("Registration Error:", error.message);
-        alert(error.message);
-        return;
+        alert("Registration successful! Check your email for confirmation.");
+        window.location.href = "index.html"; // Redirect after signup  
+    } catch (err) {
+        console.error("Unexpected Error:", err);
+        alert("An unexpected error occurred. Please try again.");
     }
-
-    const userId = data?.user?.id;
-    if (!userId) {
-        console.error("Error: User ID is undefined");
-        return;
-    }
-
-    const { error: insertError } = await supabase.from('users').insert([
-        { id: userId, email: email.trim(), name: name.trim(), role, points: 0 }
-    ]);
-
-    if (insertError) {
-        console.error("Insert Error:", insertError.message);
-        alert(`Insert failed: ${insertError.message}`);
-        return;
-    }
-
-    alert("Registration successful! Check your email for confirmation.");
 }
+
 
 // 🔹 Login User
 async function loginUser(email, password) {
