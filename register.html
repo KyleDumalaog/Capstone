@@ -18,11 +18,8 @@
                 <input type="text" id="name" placeholder="Name" required>
             
                 <!-- 🔹 Added pattern & autocorrect settings -->
-                <input type="email" id="email" placeholder="Email" required 
-                    pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-                    autocapitalize="off" autocomplete="email" autocorrect="off">
-                
-                <input type="password" id="password" placeholder="Password" required minlength="6">
+                <input type="email" id="email" name="email" required pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$">
+                <input type="password" id="password" placeholder="Password" required minlength="8">
                 <button type="submit">Register</button>
             
                 <p>Already have an account? <a href="index.html">Login here</a></p>
