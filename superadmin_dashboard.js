@@ -10,6 +10,8 @@ async function checkSuperAdmin() {
         return;
     }
 
+    console.log("Logged-in User:", user.user); // Debugging: Check logged-in user info
+
     const { data: userData, error: roleError } = await supabase
         .from('users')
         .select('role')
@@ -24,15 +26,23 @@ async function checkSuperAdmin() {
 
 // 🔹 Fetch and Display Users in Table
 async function fetchUsers() {
-    const { data: users, error } = await supabase.from('users').select('*');
+    console.log("Fetching all users..."); // Debugging log
+
+    // 🛑 CHECK: If your Supabase has Row Level Security (RLS), ensure superadmin can access all users!
+    const { data: users, error } = await supabase
+        .from('users')
+        .select('id, name, email, phone, providers, created_at, last_login, status'); // ✅ Selecting only required fields
 
     if (error) {
         console.error("Error fetching users:", error);
+        alert("Error fetching users: " + error.message);
         return;
     }
 
+    console.log("Users fetched:", users); // Debugging: See all fetched users in console
+
     const userTable = document.getElementById('user-table');
-    userTable.innerHTML = ""; // Clear table
+    userTable.innerHTML = ""; // Clear previous table content
 
     users.forEach(user => {
         const row = document.createElement('tr');
@@ -44,6 +54,7 @@ async function fetchUsers() {
             <td>${user.providers || 'Email'}</td>
             <td>${new Date(user.created_at).toLocaleString()}</td>
             <td>${user.last_login ? new Date(user.last_login).toLocaleString() : '-'}</td>
+            <td>${user.status || 'Active'}</td>
             <td>
                 <button class="remove-btn" data-id="${user.id}">❌ Remove</button>
             </td>
@@ -66,7 +77,7 @@ async function removeUser(userId) {
 
     const { error } = await supabase
         .from('users')
-        .update({ status: 'inactive' }) // Ensure you have a 'status' column
+        .update({ status: 'inactive' }) // ✅ Ensure you have a 'status' column in your database!
         .eq('id', userId);
 
     if (error) {
