@@ -1,22 +1,22 @@
 import { supabase } from './supabaseClient.js';
 
-document.getElementById('addUserForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+// 🔹 Handle User Submission
+document.getElementById('add-user-form')?.addEventListener('submit', async (event) => {
+    event.preventDefault();
 
-    const email = document.getElementById('email').value;
-    const name = document.getElementById('name').value;
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
-    const role = "user"; // This page is only for users
+    const role = document.getElementById('role').value;
 
-    if (!email || !name || !password) {
+    if (!email || !password || !name || !role) {
         alert("All fields are required!");
         return;
     }
 
     const { data, error } = await supabase.auth.signUp({
         email,
-        password,
-        options: { email_confirm: true }
+        password
     });
 
     if (error) {
@@ -24,18 +24,12 @@ document.getElementById('addUserForm').addEventListener('submit', async (e) => {
         return;
     }
 
-    const userId = data?.user?.id;
-    if (!userId) {
-        alert("User creation failed.");
-        return;
-    }
-
-    const { error: insertError } = await supabase.from('users').insert([
-        { id: userId, email, name, role, points: 0 }
+    const { error: dbError } = await supabase.from('users').insert([
+        { id: data.user.id, email, name, role, status: "active" }
     ]);
 
-    if (insertError) {
-        alert("Failed to add user: " + insertError.message);
+    if (dbError) {
+        alert("Failed to add user: " + dbError.message);
     } else {
         alert("User added successfully!");
         window.location.href = "superadmin_dashboard.html";

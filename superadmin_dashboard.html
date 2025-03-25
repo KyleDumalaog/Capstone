@@ -3,17 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Admin Dashboard</title>
+    <title>Superadmin Dashboard</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h2>Super Admin Panel</h2>
-    <button id="add-user">Add User</button>
-    <button id="add-admin">Add Admin</button>
-    <button id="remove-user">Remove User</button>
-    <button id="change-password">Change Password</button>
-    <button id="logout">Logout</button>
+    <h2>Superadmin Dashboard - User Management</h2>
 
-    <script type="module" src="superadmin_dashboard.js"></script>
+    <div class="toolbar">
+        <input type="text" id="search" placeholder="Search email or UID">
+        <button id="refresh">🔄 Refresh</button>
+        <button id="add-user">➕ Add User</button>
+        <button id="add-admin">➕ Add Admin</button>
+        <button id="change-password">🔑 Change Password</button>
+        <button id="logout">🚪 Logout</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>UID</th>
+                <th>Display Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Providers</th>
+                <th>Created At</th>
+                <th>Last Login</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="user-table">
+            <!-- Users will be loaded here dynamically -->
+        </tbody>
+    </table>
+
+    <script type="module" src="superadmin_dashboards.js"></script>
 </body>
 </html>
