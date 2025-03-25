@@ -21,6 +21,7 @@ function isValidEmail(email) {
 }
 
 
+
 // 🔹 Register User  
 async function registerUser(email, password, name) {
     email = email.trim();
