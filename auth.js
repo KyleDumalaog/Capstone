@@ -16,40 +16,34 @@ window.addEventListener("pageshow", function (event) {
 
 // 🔹 Validate Email Function  
 function isValidEmail(email) {
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const emailPattern = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
     return emailPattern.test(email);
 }
 
+
 // 🔹 Register User  
 async function registerUser(email, password, name) {
-    email = email.trim().toLowerCase();   // 🔹 Trim & ensure lowercase  
-    password = password.trim();  
-    name = name.trim();  
+    email = email.trim();
+    password = password.trim();
+    name = name.trim();
 
     if (!isValidEmail(email)) {
         alert("Invalid email format! Please enter a valid email.");
         return;
     }
 
-    try {
-        const { data, error } = await supabase.auth.signUp({
-            email,
-            password
-        });
+    const { data, error } = await supabase.auth.signUp({ email, password });
 
-        if (error) {
-            console.error("Registration Error:", error.message);
-            alert(`Error: ${error.message}`);
-            return;
-        }
-
-        alert("Registration successful! Check your email for confirmation.");
-        window.location.href = "index.html"; // Redirect after signup  
-    } catch (err) {
-        console.error("Unexpected Error:", err);
-        alert("An unexpected error occurred. Please try again.");
+    if (error) {
+        console.error("Supabase Signup Error:", error);
+        alert("Error: " + error.message); // Show exact error message
+        return;
     }
+
+    console.log("Signup Success:", data);
+    alert("Registration successful! Check your email for confirmation.");
 }
+
 
 
 // 🔹 Login User
