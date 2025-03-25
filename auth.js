@@ -36,7 +36,7 @@ async function registerUser(email, password, name) {
     const { error: insertError } = await supabase
         .from("users")
         .insert([{ 
-            id: userId,  // ✅ Ensure ID matches auth.uid()
+            id: userId,  // ✅ Must match auth.uid()
             email, 
             name, 
             role: "user", 
