@@ -1,5 +1,4 @@
-import { supabase } from "./supabaseClient.js";
-
+import { supabase } from './supabaseClient.js';
 
 // 🔹 Prevent Back Navigation After Logout
 window.history.pushState(null, "", window.location.href);
@@ -17,47 +16,46 @@ window.addEventListener("pageshow", function (event) {
 
 // 🔹 Register User
 async function registerUser(email, password, name) {
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const predefinedAdmins = {
+        "admin@example.com": "admin",
+        "superadmin@example.com": "superadmin"
+    };
+
+    let role = "user";
+    if (predefinedAdmins[email]) {
+        role = predefinedAdmins[email];
+    }
+
+    const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { email_confirm: true }
+    });
 
     if (error) {
         console.error("Registration Error:", error.message);
-        alert("Error: " + error.message);
+        alert(error.message);
         return;
     }
-    
-    console.log("User registered:", data);
-    
-    const userId = data.user?.id;
+
+    const userId = data?.user?.id;
     if (!userId) {
         console.error("Error: User ID is undefined");
-        alert("User registration failed, please try again.");
         return;
     }
-    
-    // Ensure Supabase session is established before inserting
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    
-    // Insert the new user into the database
-    const { error: insertError } = await supabase
-        .from("users")
-        .insert([{
-            id: userId,  // Use the ID from the signUp response
-            email, 
-            name, 
-            role: "user", 
-            points: 0 
-        }]);
-    
+
+    const { error: insertError } = await supabase.from('users').insert([
+        { id: userId, email, name, role, points: 0 }
+    ]);
+
     if (insertError) {
-        console.error("Upsert Error:", insertError.message);
-        alert("Insert failed: " + insertError.message);
+        console.error("Insert Error:", insertError.message);
+        alert(`Insert failed: ${insertError.message}`);
         return;
     }
-    
-    alert("Registration successful! Check your email for confirmation.");    
+
+    alert("Registration successful! Check your email for confirmation.");
 }
-
-
 
 // 🔹 Login User
 async function loginUser(email, password) {
@@ -70,17 +68,16 @@ async function loginUser(email, password) {
     }
 
     const { data: userData, error: roleError } = await supabase
-    .from('users')
-    .select('role')
-    .eq('email', email)
-    .maybeSingle();
+        .from('users')
+        .select('role')
+        .eq('email', email)
+        .maybeSingle();
 
-if (roleError || !userData) {
-    console.log("Role Fetch Error:", roleError?.message);
-    alert("Error fetching user role or user does not exist.");
-    return;
-}
-
+    if (roleError || !userData) {
+        console.error("Role Fetch Error:", roleError?.message);
+        alert("Error fetching user role or user does not exist.");
+        return;
+    }
 
     console.log("Login Success:", data);
     alert("Login successful!");
@@ -123,36 +120,32 @@ async function logoutUser() {
 
 
 // 🔹 Protect Pages: Allow Only Authenticated Users
-async function checkAuth() { 
-    const { data: { session }, error } = await supabase.auth.getSession();
+async function checkAuth() {
+    const { data: user, error } = await supabase.auth.getUser();
+    const currentPage = window.location.pathname.split('/').pop();
+    const protectedPages = ["superadmin_dashboard.html", "admin_dashboard.html", "user_dashboard.html", "history.html", "rewards.html"];
 
-if (error || !session || !session.user) {
-    console.log("User not authenticated or session expired. Redirecting...");
-    window.location.href = "index.html"; // Redirect to login page
-    return;
-}
-
-
-    // Fetch user role
-    const { data: userData, error: roleError } = await supabase
-        .from('users')
-        .select('role')
-        .eq('id', session.user.id)  // Ensure using session.user.id
-        .maybeSingle();
-
-    console.log("User role data:", userData);  // Log user data to check if role is fetched properly
-
-    if (roleError || !userData) {
-        console.log("Role Fetch Error:", roleError?.message);
-        alert("Session expired! Please log in again.");
-        window.location.href = "index.html";
+    if (error || !user || !user.user) {
+        console.log("Not authenticated, redirecting to login...");
+        if (protectedPages.includes(currentPage)) {
+            alert("Session expired! Please log in again."); // ✅ Alert before redirect
+            window.location.href = "index.html"; 
+        }
         return;
     }
 
-    // Log user role for debugging
-    console.log('User Role:', userData.role);
+    const { data: userData, error: roleError } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.user.id)
+        .maybeSingle();
 
-    const currentPage = window.location.pathname.split('/').pop();  // Get current page from URL
+    if (roleError || !userData) {
+        console.log("User not found, redirecting...");
+        alert("Session expired! Please log in again."); // ✅ Alert before redirect
+        window.location.href = "index.html";
+        return;
+    }
 
     const allowedRoles = {
         "superadmin_dashboard.html": "superadmin",
@@ -163,14 +156,10 @@ if (error || !session || !session.user) {
     };
 
     if (allowedRoles[currentPage] && userData.role !== allowedRoles[currentPage]) {
-        console.log("Unauthorized access, role mismatch.");
         alert("Unauthorized access!");
-        window.location.href = "index.html";  // Redirect to login page
+        window.location.href = "index.html";
     }
 }
-
-
-
 
 // 🔹 Run Authentication Checks on Page Load
 document.addEventListener('DOMContentLoaded', () => {
@@ -200,17 +189,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-        
-            console.log("Registering:", { name, email, password }); // ✅ Debug log
-        
-            if (!email || !password) {
-                alert("Email and Password are required.");
-                return;
-            }
-        
+
+            console.log("Registering:", name, email);
             await registerUser(email, password, name);
         });
-        
     }
 
     // 🔹 Login Form Submission

@@ -1,42 +1,24 @@
+<!-- superadmin_dashboard.html (Super Admin Page) -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Superadmin Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Super Admin</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    
 <body>
-    <h2>Superadmin Dashboard - User Management</h2>
+    <h2>Super Admin Panel</h2>
+    <button id="add-user">Add User</button>
+    <button id="remove-user">Remove User</button>
+    <a href="#" id="logout">Logout</a>
 
-    <div class="toolbar">
-        <input type="text" id="search" placeholder="Search email or UID">
-        <button id="refresh">Refresh</button>  <!-- ✅ Added event listener in JS -->
-        <button id="add-user">Add User</button>
-        <button id="add-admin">Add Admin</button>
-        <button id="change-password">Change Password</button>
-        <button id="logout">Logout</button>
-    </div>
-
-    <table id="user-table-container">  <!-- ✅ Ensuring ID exists -->
-        <thead>
-            <tr>
-                <th>UID</th>
-                <th>Display Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Providers</th>
-                <th>Created At</th>
-                <th>Last Login</th>
-                <th>Status</th>  
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="user-table">
-            <!-- Users will be dynamically added here -->
-        </tbody>
-    </table>
-
-    <script type="module" src="superadmin_dashboard.js"></script>
+        <script type="module" src="auth.js"></script>
+        <script type="module" src="user_dashboard.js"></script>
+        <script type="module" src="history.js"></script>
+        <script type="module" src="rewards.js"></script>
+        <script type="module" src="superadmin_dashboard.js"></script> <!-- ✅ Fix applied -->
+    
 </body>
 </html>
