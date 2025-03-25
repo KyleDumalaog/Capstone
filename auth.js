@@ -3,8 +3,8 @@ import { supabase } from './supabaseClient.js';
 // 🔹 Prevent Back Navigation After Logout
 window.history.pushState(null, "", window.location.href);
 window.onpopstate = function () {
-    alert("Session expired! Please log in again.");
-    window.location.replace("index.html");
+    alert("Session expired! Please log in again."); // ✅ Show message
+    window.location.replace("index.html"); // ✅ Redirect & replace history
 };
 
 // 🔹 Fix for Safari & Mobile: Force Reload on Back Button
@@ -14,37 +14,48 @@ window.addEventListener("pageshow", function (event) {
     }
 });
 
-// 🔹 Validate Email Function  
-function isValidEmail(email) {
-    return email.includes("@") && email.includes(".");
-}
-
-
-
-// 🔹 Register User  
+// 🔹 Register User
 async function registerUser(email, password, name) {
-    email = email.trim();
-    password = password.trim();
-    name = name.trim();
+    const predefinedAdmins = {
+        "admin@example.com": "admin",
+        "superadmin@example.com": "superadmin"
+    };
 
-    if (!isValidEmail(email)) {
-        alert("Invalid email format! Please enter a valid email.");
-        return;
+    let role = "user";
+    if (predefinedAdmins[email]) {
+        role = predefinedAdmins[email];
     }
 
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { email_confirm: true }
+    });
 
     if (error) {
-        console.error("Supabase Signup Error:", error);
-        alert("Error: " + error.message); // Show exact error message
+        console.error("Registration Error:", error.message);
+        alert(error.message);
         return;
     }
 
-    console.log("Signup Success:", data);
+    const userId = data?.user?.id;
+    if (!userId) {
+        console.error("Error: User ID is undefined");
+        return;
+    }
+
+    const { error: insertError } = await supabase.from('users').insert([
+        { id: userId, email, name, role, points: 0 }
+    ]);
+
+    if (insertError) {
+        console.error("Insert Error:", insertError.message);
+        alert(`Insert failed: ${insertError.message}`);
+        return;
+    }
+
     alert("Registration successful! Check your email for confirmation.");
 }
-
-
 
 // 🔹 Login User
 async function loginUser(email, password) {
@@ -56,38 +67,21 @@ async function loginUser(email, password) {
         return;
     }
 
-    // 🔹 Fetch authenticated user
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-        console.error("Auth Error:", authError?.message || "User not found.");
-        alert("Authentication failed. Please try again.");
-        return;
-    }
-
-    // 🔹 Fetch user role using ID (not email)
     const { data: userData, error: roleError } = await supabase
         .from('users')
         .select('role')
-        .eq('id', user.id)
+        .eq('email', email)
         .maybeSingle();
 
-    if (roleError) {
-        console.error("Role Fetch Error:", roleError.message);
-        alert("Error fetching user role.");
-        return;
-    }
-
-    if (!userData || !userData.role) {
-        console.error("User role not found");
-        alert("User role not found.");
+    if (roleError || !userData) {
+        console.error("Role Fetch Error:", roleError?.message);
+        alert("Error fetching user role or user does not exist.");
         return;
     }
 
     console.log("Login Success:", data);
     alert("Login successful!");
 
-    // 🔹 Redirect Based on Role
     if (userData.role === 'superadmin') {
         window.location.href = "superadmin_dashboard.html";
     } else if (userData.role === 'admin') {
@@ -113,47 +107,42 @@ async function logoutUser() {
     document.cookie = ""; // Clear cookies if used
 
     console.log("Logout successful, session cleared.");
-    alert("You have been logged out.");
+    alert("You have been logged out."); // ✅ Show logout message
 
-    // 🔹 Redirect and prevent back button access
+    // 🔹 Prevent back button access
     setTimeout(() => {
-        window.location.replace("index.html");
+        window.location.replace("index.html"); // ✅ Redirect & replace history
     }, 100);
+
+    // 🔹 Push new history state to block back navigation
     history.pushState(null, "", "index.html");
 }
 
+
 // 🔹 Protect Pages: Allow Only Authenticated Users
 async function checkAuth() {
-    const { data: { user }, error } = await supabase.auth.getUser();
+    const { data: user, error } = await supabase.auth.getUser();
     const currentPage = window.location.pathname.split('/').pop();
     const protectedPages = ["superadmin_dashboard.html", "admin_dashboard.html", "user_dashboard.html", "history.html", "rewards.html"];
 
-    if (error || !user) {
-        console.log("Not authenticated, redirecting...");
+    if (error || !user || !user.user) {
+        console.log("Not authenticated, redirecting to login...");
         if (protectedPages.includes(currentPage)) {
-            alert("Session expired! Please log in again.");
-            window.location.href = "index.html";
+            alert("Session expired! Please log in again."); // ✅ Alert before redirect
+            window.location.href = "index.html"; 
         }
         return;
     }
 
-    // 🔹 Fetch user role
     const { data: userData, error: roleError } = await supabase
         .from('users')
         .select('role')
-        .eq('id', user.id)
+        .eq('id', user.user.id)
         .maybeSingle();
 
-    if (roleError) {
-        console.error("Role Fetch Error:", roleError.message);
-        alert("Error fetching user role.");
-        window.location.href = "index.html";
-        return;
-    }
-
-    if (!userData || !userData.role) {
-        console.log("User role missing, redirecting...");
-        alert("Session expired! Please log in again.");
+    if (roleError || !userData) {
+        console.log("User not found, redirecting...");
+        alert("Session expired! Please log in again."); // ✅ Alert before redirect
         window.location.href = "index.html";
         return;
     }
@@ -183,25 +172,39 @@ document.addEventListener('DOMContentLoaded', () => {
         checkAuth();
     }
 
-    document.getElementById('logout')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        logoutUser();
-    });
+    // 🔹 Logout Button Event Listener
+    const logoutBtn = document.getElementById('logout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            logoutUser();
+        });
+    }
 
-    document.getElementById('register-form')?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await registerUser(
-            document.getElementById('name').value,
-            document.getElementById('email').value,
-            document.getElementById('password').value
-        );
-    });
+    // 🔹 Register Form Submission
+    const registerForm = document.getElementById('register-form');
+    if (registerForm) {
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
-    document.getElementById('login-form')?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await loginUser(
-            document.getElementById('email').value,
-            document.getElementById('password').value
-        );
-    });
+            console.log("Registering:", name, email);
+            await registerUser(email, password, name);
+        });
+    }
+
+    // 🔹 Login Form Submission
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            console.log("Logging in:", email);
+            await loginUser(email, password);
+        });
+    }
 });
