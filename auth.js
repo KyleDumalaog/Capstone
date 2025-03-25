@@ -126,30 +126,29 @@ async function logoutUser() {
 
 
 // 🔹 Protect Pages: Allow Only Authenticated Users
-async function checkAuth() {
+async function checkAuth() { 
     const { data: { session }, error } = await supabase.auth.getSession();
     
-    if (error || !session) {
+    if (error || !session || !session.user) {
         console.log("User not authenticated. Redirecting...");
         window.location.href = "index.html";
         return;
     }
 
-    console.log("User authenticated:", session);
-}
-
-   /* const { data: userData, error: roleError } = await supabase
+    const { data: userData, error: roleError } = await supabase
         .from('users')
         .select('role')
-        .eq('id', user.user.id)
+        .eq('id', session.user.id)  // ✅ FIXED: Use session.user.id
         .maybeSingle();
 
     if (roleError || !userData) {
         console.log("User not found, redirecting...");
-        alert("Session expired! Please log in again."); // ✅ Alert before redirect
+        alert("Session expired! Please log in again.");
         window.location.href = "index.html";
         return;
     }
+
+    const currentPage = window.location.pathname.split('/').pop();  // ✅ Added this line
 
     const allowedRoles = {
         "superadmin_dashboard.html": "superadmin",
@@ -163,7 +162,8 @@ async function checkAuth() {
         alert("Unauthorized access!");
         window.location.href = "index.html";
     }
-}*/
+}
+
 
 // 🔹 Run Authentication Checks on Page Load
 document.addEventListener('DOMContentLoaded', () => {
