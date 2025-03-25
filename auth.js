@@ -34,18 +34,18 @@ async function registerUser(email, password, name) {
         return;
     }
 
-    // Wait for authentication session to be established
+    // Ensure Supabase session is established before inserting
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     const { error: insertError } = await supabase
         .from("users")
-        .upsert([{ 
+        .insert([{ 
             id: userId, 
             email, 
             name, 
             role: "user", 
             points: 0 
-        }], { onConflict: ['id'] });
+        }]);
 
     if (insertError) {
         console.error("Upsert Error:", insertError.message);
