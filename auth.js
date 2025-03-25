@@ -68,11 +68,20 @@ async function loginUser(email, password) {
     }
 
     // 🔹 Fetch role correctly
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+        console.error("Auth Error:", authError?.message || "User not found.");
+        alert("Authentication failed. Please try again.");
+        return;
+    }
+    
     const { data: userData, error: roleError } = await supabase
         .from('users')
         .select('role')
-        .eq('email', email)
+        .eq('id', user.id)  // ✅ Correct: Query using the authenticated user's ID.
         .maybeSingle();
+    
 
     if (roleError) {
         console.error("Role Fetch Error:", roleError.message);
