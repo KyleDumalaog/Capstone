@@ -27,16 +27,19 @@ async function registerUser(email, password, name) {
         return;
     }
 
-    const userId = data.user?.id; // ✅ Get the authenticated user ID
+    // ✅ Ensure userId is correctly assigned
+    const userId = data.user?.id; 
     if (!userId) {
         console.error("Error: User ID is undefined");
+        alert("User registration failed, please try again.");
         return;
     }
 
+    // ✅ Now we can insert into the users table
     const { error: insertError } = await supabase
         .from("users")
         .insert([{ 
-            id: userId,  // ✅ Must match auth.uid()
+            id: userId,  // ✅ This should now be correctly set
             email, 
             name, 
             role: "user", 
