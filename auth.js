@@ -24,36 +24,37 @@ async function registerUser(email, password, name) {
         alert("Error: " + error.message);
         return;
     }
-
+    
     console.log("User registered:", data);
-
+    
     const userId = data.user?.id;
     if (!userId) {
         console.error("Error: User ID is undefined");
         alert("User registration failed, please try again.");
         return;
     }
-
+    
     // Ensure Supabase session is established before inserting
     await new Promise((resolve) => setTimeout(resolve, 2000));
-
+    
+    // Insert the new user into the database
     const { error: insertError } = await supabase
         .from("users")
-        .insert([{ 
-            id: userId, 
+        .insert([{
+            id: userId,  // Use the ID from the signUp response
             email, 
             name, 
             role: "user", 
             points: 0 
         }]);
-
+    
     if (insertError) {
         console.error("Upsert Error:", insertError.message);
         alert("Insert failed: " + insertError.message);
         return;
     }
-
-    alert("Registration successful! Check your email for confirmation.");
+    
+    alert("Registration successful! Check your email for confirmation.");    
 }
 
 
@@ -69,16 +70,17 @@ async function loginUser(email, password) {
     }
 
     const { data: userData, error: roleError } = await supabase
-        .from('users')
-        .select('role')
-        .eq('email', email)
-        .maybeSingle();
+    .from('users')
+    .select('role')
+    .eq('email', email)
+    .maybeSingle();
 
-    if (roleError || !userData) {
-        console.error("Role Fetch Error:", roleError?.message);
-        alert("Error fetching user role or user does not exist.");
-        return;
-    }
+if (roleError || !userData) {
+    console.log("Role Fetch Error:", roleError?.message);
+    alert("Error fetching user role or user does not exist.");
+    return;
+}
+
 
     console.log("Login Success:", data);
     alert("Login successful!");
@@ -123,30 +125,34 @@ async function logoutUser() {
 // 🔹 Protect Pages: Allow Only Authenticated Users
 async function checkAuth() { 
     const { data: { session }, error } = await supabase.auth.getSession();
-    console.log('Session:', session);  // Log session data
+    console.log("Session data:", session);  // Log session data to check if it's valid
 
     if (error || !session || !session.user) {
         console.log("User not authenticated. Redirecting...");
-        window.location.href = "index.html";
+        window.location.href = "index.html"; // Redirect to login page
         return;
     }
 
+    // Fetch user role
     const { data: userData, error: roleError } = await supabase
         .from('users')
         .select('role')
-        .eq('id', session.user.id)  // ✅ FIXED: Use session.user.id
+        .eq('id', session.user.id)  // Ensure using session.user.id
         .maybeSingle();
 
+    console.log("User role data:", userData);  // Log user data to check if role is fetched properly
+
     if (roleError || !userData) {
-        console.log("User not found or role error, redirecting...");
+        console.log("Role Fetch Error:", roleError?.message);
         alert("Session expired! Please log in again.");
         window.location.href = "index.html";
         return;
     }
 
-    console.log('User Role:', userData.role);  // Log the user's role
+    // Log user role for debugging
+    console.log('User Role:', userData.role);
 
-    const currentPage = window.location.pathname.split('/').pop();  // ✅ Added this line
+    const currentPage = window.location.pathname.split('/').pop();  // Get current page from URL
 
     const allowedRoles = {
         "superadmin_dashboard.html": "superadmin",
@@ -157,10 +163,12 @@ async function checkAuth() {
     };
 
     if (allowedRoles[currentPage] && userData.role !== allowedRoles[currentPage]) {
+        console.log("Unauthorized access, role mismatch.");
         alert("Unauthorized access!");
-        window.location.href = "index.html";
+        window.location.href = "index.html";  // Redirect to login page
     }
 }
+
 
 
 
