@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "recharge-1a62c"
-  }
+    "default": "recharge-ba143",
+    "ReChargeWeb": "recharge-ba143"
+  },
+  "targets": {},
+  "etags": {}
 }
