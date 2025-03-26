@@ -1,8 +1,21 @@
 import { auth, db } from "./firebase-config.js";
 import { signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        if (user.emailVerified) {
+            // ✅ Update Firestore if user is verified
+            const userRef = doc(db, "users", user.uid);
+            await updateDoc(userRef, { verified: true });
+            console.log("✅ User verification status updated in Firestore.");
+        } else {
+            console.log("❌ User email is NOT verified yet.");
+        }
+    }
+});
 
 // 🔹 Login User & Check Email Verification
 async function loginUser(email, password) {

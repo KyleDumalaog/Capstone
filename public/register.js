@@ -1,6 +1,7 @@
 import { auth, db } from "./firebase-config.js";
+import { setDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
 
 // Handle User Registration
 document.getElementById("register-form").addEventListener("submit", async (e) => {
