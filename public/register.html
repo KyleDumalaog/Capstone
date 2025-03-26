@@ -30,6 +30,16 @@
     <script type="module" src="./firebase-config.js"></script>
     <script type="module" src="./register.js"></script>
     <script type="module" src="./auth.js"></script>
-       
+    <script>
+        // Prevent Back Button After Logout (Works on All Devices & Browsers)
+        function preventBack() {
+            window.history.pushState(null, "", window.location.href);
+            window.onpopstate = function () {
+                window.history.pushState(null, "", window.location.href);
+            };
+        }
+        preventBack();
+    </script>
+    
 </body>
 </html>

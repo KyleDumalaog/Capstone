@@ -1,0 +1,194 @@
+/* Import Poppins font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+/* 🔹 Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    width: 120px;
+    height: auto;
+    margin-right: 1px;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f8f9fa;
+}
+
+/* Header Styles */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #6faf3b;
+    padding:0px 30px 0px;
+}
+
+.table-container {
+
+   margin: 20px;
+   padding: 20px;
+}
+/* 🔹 Responsive Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #f9f9f9;
+    overflow-x: auto; /* Allows scrolling on small screens */
+    display: block;
+    white-space: nowrap;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+    font-size: 16px;
+}
+
+th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* 🔹 Buttons */
+button {
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+button.edit-user {
+    background-color: #e4f0a0;
+    color: #349e00;
+}
+
+button.delete-user {
+    background-color:  #6faf3b;
+    color: white;
+}
+
+/* 🔹 Modal Styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
+
+/* 🔹 Modal Content */
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    position: relative;
+}
+
+/* 🔹 Close Button */
+.close,
+.close-add-user {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-weight: bold;
+}
+
+/* 🔹 Form Inputs */
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* 🔹 Logout Link */
+#logout {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 15px;
+    background:#e4f0a0;
+    color: #349e00;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+}
+
+#logout:hover {
+    background: #349e00;
+}
+
+button#adduserbtn {
+    background-color: #e4f0a0;
+    color: #349e00;
+    margin-left: 10px;
+}
+/* 🔹 Buttons Wrapper */
+button#refresh-users-btn {
+    background-color: #6faf3b;
+    color: white;
+    margin-left: 10px;
+}
+
+/* 🔹 Responsive Styles */
+@media (max-width: 768px) {
+    body {
+        margin: 10px;
+        padding: 5px;
+    }
+
+    h2 {
+        font-size: 20px;
+        text-align: center;
+    }
+
+    /* Center align buttons */
+    button {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    /* Make table scrollable on small screens */
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}

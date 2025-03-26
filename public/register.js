@@ -33,3 +33,5 @@ document.getElementById("register-form").addEventListener("submit", async (e) =>
     }
     
 });
+
+

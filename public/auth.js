@@ -1,18 +1,22 @@
-import { auth, db } from "./firebase-config.js";
 import { signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { auth, db } from "./firebase-config.js";
+import { updateDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+// 🔹 Listen for Authentication Changes
 onAuthStateChanged(auth, async (user) => {
     if (user) {
+        console.log("User logged in:", user.email);
+        console.log("Email Verified Status:", user.emailVerified);
+
         if (user.emailVerified) {
-            // ✅ Update Firestore if user is verified
+            // ✅ Update Firestore "verified" field to true
             const userRef = doc(db, "users", user.uid);
             await updateDoc(userRef, { verified: true });
-            console.log("✅ User verification status updated in Firestore.");
+            console.log("✅ Firestore updated: User is verified.");
         } else {
-            console.log("❌ User email is NOT verified yet.");
+            console.log("❌ User email is still NOT verified.");
         }
     }
 });
@@ -41,17 +45,18 @@ async function loginUser(email, password) {
 
         // 🔹 Redirect Based on Role
         if (userData.role === "superadmin") {
-            window.location.href = "superadmin_dashboard.html";
+            window.location.replace("superadmin_dashboard.html");
         } else if (userData.role === "admin") {
-            window.location.href = "admin_dashboard.html";
+            window.location.replace("admin_dashboard.html");
         } else {
-            window.location.href = "user_dashboard.html";
+            window.location.replace("user_dashboard.html");
         }
     } catch (error) {
         console.error("Login Error:", error.message);
         alert(error.message);
     }
 }
+
 // 🔹 Attach Login Event
 document.getElementById("login-form").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -61,7 +66,7 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
     await loginUser(email, password);
 });
 
-// 🔹 Logout Function
+// 🔹 Logout Function (Prevents Back Button Navigation)
 async function logoutUser() {
     try {
         await signOut(auth);
@@ -69,14 +74,21 @@ async function logoutUser() {
 
         // ✅ Prevent Back Button Navigation After Logout
         sessionStorage.clear();
-        window.location.href = "index.html"; // Redirect to login page
+        localStorage.clear();
+        document.cookie = "user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        
+        // Redirect and remove previous session history
+        window.location.replace("index.html");
+        setTimeout(() => {
+            history.replaceState(null, null, "index.html");
+        }, 0);
     } catch (error) {
         console.error("Logout Error:", error.message);
         alert(error.message);
     }
 }
 
-// 🔹 Attach Logout Event (Make sure the logout button exists in the dashboard)
+// 🔹 Attach Logout Event
 document.addEventListener("DOMContentLoaded", () => {
     const logoutButton = document.getElementById("logout");
     if (logoutButton) {
@@ -87,32 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-
-
-// 🔹 Resend Verification Email
-async function resendVerificationEmail() {
-    try {
-        const user = auth.currentUser;
-        if (user) {
-            await sendEmailVerification(user);
-            alert("Verification email sent! Check your inbox.");
-        } else {
-            alert("No user logged in.");
-        }
-    } catch (error) {
-        console.error("Resend Email Error:", error.message);
-        alert(error.message);
-    }
-}
-
-// Attach event to "Resend Email" button
-document.getElementById("resend-email").addEventListener("click", resendVerificationEmail);
-
-
-onAuthStateChanged(auth, (user) => {
-    if (user && user.emailVerified) {
-        // ✅ Redirect based on role if already logged in
-        window.location.href = "user_dashboard.html"; // Change for admin/superadmin
-    }
+// 🔹 Prevent User from Going Back After Logout
+window.addEventListener("popstate", function () {
+    history.pushState(null, null, window.location.href);
 });
-

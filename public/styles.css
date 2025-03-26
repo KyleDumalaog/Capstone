@@ -116,6 +116,31 @@ body {
     text-decoration: underline;
 }
 
+.password-container {
+    position: relative;
+    width: 100%;
+}
+
+.password-container input {
+    width: 100%;
+    padding: 10px;
+    padding-right: 40px; /* Space for the eye icon */
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    font-size: 16px;
+}
+
+.eye-icon {
+    position: absolute;
+    right: 10px;
+    top: 37%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 14px;
+    color: #1d6899;
+}
+
+
 /* 🔹 Responsiveness */
 @media (max-width: 480px) {
     body {

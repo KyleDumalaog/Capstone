@@ -17,7 +17,10 @@
         <h2>Sign In</h2>
         <form id="login-form">
             <input type="email" id="email" placeholder="Email" required>
-            <input type="password" id="password" placeholder="Password" required>
+            <div class="password-container">
+                <input type="password" id="password" placeholder="Password" required>
+                <span id="togglePassword" class="eye-icon">Show</span>
+            </div>            
             <button type="submit">Login</button>
             <p>Don’t have an account? <a href="register.html">Register here</a></p>
         </form>
@@ -26,11 +29,34 @@
     <script type="module" src="./firebase-config.js"></script>
     <script type="module" src="./auth.js"></script>
     <script>
-        window.history.pushState(null, "", window.location.href);
-        window.onpopstate = function () {
+        // Prevent Back Button After Logout (Works on All Devices & Browsers)
+        function preventBack() {
             window.history.pushState(null, "", window.location.href);
-        };
+            window.onpopstate = function () {
+                window.history.pushState(null, "", window.location.href);
+            };
+        }
+        preventBack();
     </script>
+    
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const passwordInput = document.getElementById("password");
+        const togglePassword = document.getElementById("togglePassword");
+
+        togglePassword.addEventListener("click", function () {
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text"; // Show password
+                togglePassword.textContent = "Hide"; // Change button icon
+            } else {
+                passwordInput.type = "password"; // Hide password
+                togglePassword.textContent = "Show"; // Change button icon
+            }
+        });
+    });
+</script>
+
     
 </body>
 </html>
