@@ -8,12 +8,17 @@
         <title>Admin Dashboard</title>
         <link rel="stylesheet" href="styles.css">
     </head>
+    <header>
+        <div class="logoheader-container">
+            <img src="assets/ReChargeLogo.png?v=2" alt="Logo" class="logoHeader"> 
+        </div>
+        <a href="#" id="logout">Logout</a>
+    </header>
     
 <body>
     <h2>Admin Dashboard</h2>
     <p>Machine Status: <span id="machine-status">Checking...</span></p>
     <button id="update-status">Update Machine Status</button>
-    <a href="#" id="logout">Logout</a>
     
     <script type="module" src="auth.js"></script>
     <script type="module" src="admin_dashboard.js"></script>

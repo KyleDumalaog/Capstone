@@ -14,10 +14,26 @@ body {
     background-color: #FFFFFF;
     display: flex;
     flex-direction: column; /* Stack logo + container */
-    justify-content: center;
-    align-items: center;
     height: 100vh;
     padding: 20px; /* Added padding for smaller screens */
+}
+/* Header Styles */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #6faf3b;
+    padding:0px 30px 0px;
+}
+.logoheader-container {
+    display: flex;
+    align-items: center;
+}
+
+.logoHeader {
+    width: 120px;
+    height: auto;
+    margin-right: 1px;
 }
 
 /* 🔹 Logo */
@@ -138,6 +154,17 @@ body {
     cursor: pointer;
     font-size: 14px;
     color: #1d6899;
+}
+/* 🔹 Logout Link */
+#logout {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 15px;
+    background:#e4f0a0;
+    color: #349e00;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
 }
 
 
