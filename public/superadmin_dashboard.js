@@ -144,9 +144,10 @@ if (closeAddUserModalBtn) {
 
     onAuthStateChanged(auth, (user) => {
         if (!user) {
+            console.log("User not logged in! Redirecting...");
             window.location.href = "index.html";
         }
-    });
+    });    
 
     if (logoutButton) {
         logoutButton.addEventListener("click", async (event) => {
@@ -230,4 +231,18 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
+
+window.onload = function () {
+    // Prevent back navigation after logout
+    history.pushState(null, null, location.href);
+    window.onpopstate = function () {
+        history.go(1);
+    };
+
+    // Check if session expired and redirect
+    if (sessionStorage.getItem("sessionExpired")) {
+        sessionStorage.removeItem("sessionExpired");
+        window.location.href = "index.html";
+    }
+};
 
