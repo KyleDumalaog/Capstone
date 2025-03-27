@@ -8,14 +8,22 @@
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
-
+.indexBody{
+    background-color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: 20px;
+}
 /* 🔹 Center Everything */
 body {
     background-color: #FFFFFF;
     display: flex;
     flex-direction: column; /* Stack logo + container */
     height: 100vh;
-    padding: 20px; /* Added padding for smaller screens */
+    padding: 0px; /* Added padding for smaller screens */
 }
 /* Header Styles */
 header {

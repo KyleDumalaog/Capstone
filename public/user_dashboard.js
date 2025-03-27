@@ -1,11 +1,33 @@
-import { auth } from "./firebase-config.js";
+import { auth, db } from "./firebase-config.js";
 import { signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-onAuthStateChanged(auth, (user) => {
+
+// Get reference to the username span
+const userNameSpan = document.getElementById("user-name");
+
+onAuthStateChanged(auth, async (user) => {
     if (!user) {
-        // Redirect to login if not authenticated
-        window.location.href = "index.html";
+        window.location.href = "index.html"; // Redirect if not logged in
+        return;
+    }
+
+    // Fetch user data from Firestore
+    try {
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+            const userData = userSnap.data();
+            userNameSpan.textContent = userData.name || "User"; // Display name or default to "User"
+        } else {
+            console.error("User document not found!");
+            userNameSpan.textContent = "Unknown User";
+        }
+    } catch (error) {
+        console.error("Error fetching user data:", error);
+        userNameSpan.textContent = "Error Loading";
     }
 });
 document.addEventListener("DOMContentLoaded", () => {
