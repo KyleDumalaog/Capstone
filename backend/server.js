@@ -1,9 +1,10 @@
-const express = require("express");
-const cors = require("cors");
-const admin = require("firebase-admin");
+import express from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
+import admin from "firebase-admin";
+import fs from "fs";
 
-// Initialize Firebase Admin SDK (Ensure you have the service account key)
-const serviceAccount = require("./serviceAccountKey.json"); // Change path if needed
+const serviceAccount = JSON.parse(fs.readFileSync("./serviceAccountKey.json"));
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -11,26 +12,27 @@ admin.initializeApp({
 
 const app = express();
 app.use(cors());
-app.use(express.json()); // Enable JSON parsing
+app.use(bodyParser.json());
 
-// 🔹 DELETE user from Firebase Authentication
-app.post("/deleteUser", async (req, res) => {
+app.post("/delete-user", async (req, res) => {
     const { uid } = req.body;
-
-    if (!uid) {
-        return res.status(400).json({ error: "Missing UID" });
-    }
-
+    console.log("🧹 Attempting to delete UID:", uid);
+  
     try {
-        await admin.auth().deleteUser(uid);
-        res.json({ message: "User deleted successfully" });
+      await admin.auth().deleteUser(uid);
+      console.log("✅ Deleted from Auth:", uid);
+  
+      await admin.firestore().doc(`users/${uid}`).delete();
+      console.log("🗑️ Deleted from Firestore:", uid);
+  
+      res.send({ message: "User deleted successfully!" });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+      console.error("❌ Delete Error:", error);
+      res.status(500).send({ error: error.message });
     }
-});
+  });
+  
 
-// 🔹 Start the server
-const PORT = 3001;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.listen(3000, () => {
+  console.log("🚀 Admin API running at http://localhost:3000");
 });

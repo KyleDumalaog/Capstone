@@ -57,13 +57,25 @@ async function loginUser(email, password) {
     }
 }
 
-// 🔹 Attach Login Event
-document.getElementById("login-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+// 🔹 Wrap login & logout in DOMContentLoaded to prevent early DOM or storage errors
+document.addEventListener("DOMContentLoaded", () => {
+    const loginForm = document.getElementById("login-form");
+    if (loginForm) {
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            await loginUser(email, password);
+        });
+    }
 
-    await loginUser(email, password);
+    const logoutButton = document.getElementById("logout");
+    if (logoutButton) {
+        logoutButton.addEventListener("click", async (event) => {
+            event.preventDefault();
+            await logoutUser();
+        });
+    }
 });
 
 // 🔹 Logout Function (Prevents Back Button Navigation)
@@ -101,5 +113,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // 🔹 Prevent User from Going Back After Logout
 window.addEventListener("popstate", function () {
-    history.pushState(null, null, window.location.href);
+    window.history.forward();
 });

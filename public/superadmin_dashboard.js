@@ -13,28 +13,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     const saveUserBtn = document.getElementById("save-user-btn");
     const logoutButton = document.getElementById("logout");
     const closeAddUserModalBtn = document.querySelector(".close-add-user");
-const addUserModal = document.getElementById("addUserModal");
+    const addUserModal = document.getElementById("addUserModal");
 
-if (closeAddUserModalBtn) {
-    closeAddUserModalBtn.addEventListener("click", () => {
-        addUserModal.style.display = "none";
-    });
-} else {
-    console.error("Close button not found!");
-}
+    if (closeAddUserModalBtn) {
+        closeAddUserModalBtn.addEventListener("click", () => {
+            addUserModal.style.display = "none";
+        });
+    } else {
+        console.error("Close button not found!");
+    }
 
-    const refreshButton = document.getElementById("refresh-users-btn"); // Get existing refresh button
+    const refreshButton = document.getElementById("refresh-users-btn");
 
     document.getElementById("new-user-name").value = "";
     document.getElementById("new-user-email").value = "";
     document.getElementById("new-user-password").value = "";
-    document.getElementById("new-user-role").value = "user"; // Reset role dropdown
+    document.getElementById("new-user-role").value = "user";
 
     let currentEditingUserId = null;
 
     async function loadUsers() {
         console.log("🔄 Reloading user list...");
-        usersTable.innerHTML = ""; // Clear table before loading
+        usersTable.innerHTML = "";
         const querySnapshot = await getDocs(collection(db, "users"));
 
         querySnapshot.forEach((userDoc) => {
@@ -70,9 +70,32 @@ if (closeAddUserModalBtn) {
         document.querySelectorAll(".delete-user").forEach(button => {
             button.addEventListener("click", async (event) => {
                 const userId = event.target.dataset.id;
+
                 if (confirm("Are you sure you want to delete this user?")) {
-                    await deleteDoc(doc(db, "users", userId));
-                    loadUsers(); // Refresh table
+                    try {
+                        console.log("🛑 Sending UID to backend for deletion:", userId); // ✅ Debug log
+
+                        const response = await fetch("http://localhost:3000/delete-user", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ uid: userId })
+                        });
+
+                        const data = await response.json();
+                        console.log("🧾 Response from server:", data); // ✅ Debug log
+
+                        if (response.ok) {
+                            alert("✅ User deleted successfully!");
+                            loadUsers(); // Refresh table
+                        } else {
+                            alert("❌ Failed to delete: " + data.error);
+                        }
+                    } catch (err) {
+                        console.error("❌ Delete error:", err);
+                        alert("An error occurred while deleting user.");
+                    }
                 }
             });
         });
@@ -115,16 +138,16 @@ if (closeAddUserModalBtn) {
         const email = document.getElementById("new-user-email").value;
         const password = document.getElementById("new-user-password").value;
         const role = document.getElementById("new-user-role").value;
-    
+
         if (!name || !email || !password) {
             alert("All fields are required!");
             return;
         }
-    
+
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const userId = userCredential.user.uid;
-    
+
             await setDoc(doc(db, "users", userId), {
                 name,
                 email,
@@ -132,7 +155,7 @@ if (closeAddUserModalBtn) {
                 verified: false,
                 createdAt: serverTimestamp()
             });
-    
+
             alert("User added successfully!");
             closeAddUserModal();
             document.getElementById("addUserForm").reset();
@@ -147,7 +170,7 @@ if (closeAddUserModalBtn) {
             console.log("User not logged in! Redirecting...");
             window.location.href = "index.html";
         }
-    });    
+    });
 
     if (logoutButton) {
         logoutButton.addEventListener("click", async (event) => {
@@ -175,7 +198,6 @@ if (closeAddUserModalBtn) {
 
     loadUsers();
 
-    // 🔄 Add event listener for the existing refresh button
     if (refreshButton) {
         refreshButton.addEventListener("click", () => {
             console.log("🔄 Refresh button clicked! Reloading users...");
@@ -185,23 +207,20 @@ if (closeAddUserModalBtn) {
         console.error("⚠ Refresh button not found in HTML!");
     }
 
-    // 🔹 OPEN Add User Modal
     document.querySelector(".btn-primary").addEventListener("click", () => {
         console.log("Opening Add User Modal...");
         addUserModal.style.display = "flex";
     });
 
-    // 🔹 CLOSE Add User Modal - Button Click
     if (closeAddUserModalBtn) {
         closeAddUserModalBtn.addEventListener("click", () => {
-            console.log("Close button clicked!"); // Debugging
+            console.log("Close button clicked!");
             closeAddUserModal();
         });
     } else {
         console.error("Close button for Add User modal not found!");
     }
 
-    // 🔹 CLOSE Add User Modal - Clicking Outside Modal
     window.addEventListener("click", (event) => {
         if (event.target === addUserModal) {
             console.log("Clicked outside modal, closing...");
@@ -224,7 +243,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Close menu when clicking outside
     document.addEventListener("click", () => {
         document.querySelectorAll(".actions-menu").forEach((menu) => {
             menu.style.display = "none";
@@ -233,16 +251,13 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 window.onload = function () {
-    // Prevent back navigation after logout
     history.pushState(null, null, location.href);
     window.onpopstate = function () {
         history.go(1);
     };
 
-    // Check if session expired and redirect
     if (sessionStorage.getItem("sessionExpired")) {
         sessionStorage.removeItem("sessionExpired");
         window.location.href = "index.html";
     }
 };
-
