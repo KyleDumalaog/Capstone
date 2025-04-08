@@ -1,0 +1,47 @@
+<!-- verify.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="assets/ReChargeLOGO (2).ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Your Email</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="indexBody">
+    <div class="logo-container">
+      <img src="assets/ReChargeLOGO (2).png?v=2" alt="Logo" class="logo">
+    </div>
+    <div class="container">
+      <h2>Check Your Email</h2>
+      <p>We've sent you a verification email. Please check your inbox and verify your account.</p>
+      
+      <button id="resend-verification">Resend Verification Email</button>
+      <br>
+      <p>Email Verified? <a href="index.html">Login here</a></p>
+    </div>
+  </div>
+
+  <script type="module" src="./firebase-config.js"></script>
+  <script type="module">
+    import { auth } from "./firebase-config.js";
+    import { sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    document.getElementById("resend-verification").addEventListener("click", async () => {
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          await sendEmailVerification(user);
+          alert("Verification email sent again!");
+        } catch (error) {
+          console.error("Resend error:", error);
+          alert("Error resending verification email.");
+        }
+      } else {
+        alert("No user is currently signed in.");
+      }
+    });
+  </script>
+</body>
+</html>

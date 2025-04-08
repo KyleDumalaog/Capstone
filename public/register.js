@@ -16,24 +16,28 @@ document.addEventListener("DOMContentLoaded", () => {
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
-
-                // Send verification email
+            
                 await sendEmailVerification(user);
-
-                // Store user in Firestore
+            
                 await setDoc(doc(db, "users", user.uid), {
                     id: user.uid,
                     email,
                     name,
-                    role: "user",  // Default role
+                    role: "user",
                     verified: false
                 });
-
-                alert("Registration successful! A verification email has been sent. Please verify before logging in.");
+            
+                // Clear form fields
+                registerForm.reset();
+            
+                // Redirect to verification page
+                window.location.href = "verify.html";
             } catch (error) {
                 console.error("Registration Error:", error.message);
                 alert(error.message);
             }
+            
+            
         });
     }
 });
