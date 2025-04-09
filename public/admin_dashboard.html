@@ -1,25 +1,66 @@
-<!-- admin_dashboard.html (Admin Page) -->
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <link rel="icon" type="image/x-icon" href="assets/ReChargeLOGO (2).ico">
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Admin Dashboard</title>
-        <link rel="stylesheet" href="styles.css">
-    </head>
-    <header>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="admin_dashboard.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="assets/ReChargeLOGO (2).ico">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
         <div class="logoheader-container">
             <img src="assets/ReChargeLOGO (2).png?v=2" alt="Logo" class="logoHeader"> 
         </div>
-        <a href="#" id="logout">Logout</a>
+        <a href="#" id="logout" class="profile-icon">Logout</a>
     </header>
-    
-<body>
-    <h2>Admin Dashboard</h2>
-    <p>Machine Status: <span id="machine-status">Checking...</span></p>
-    <button id="update-status">Update Machine Status</button>
-    
+
+    <!-- Main content -->
+    <main class="dashboard">
+        <h2>Admin Dashboard</h2>
+        
+        <!-- Bottles Inserted Section -->
+        <section class="bottles">
+            <div class="top-row">
+                <h2>Bottles Inserted</h2>
+                <span class="date">As of March 13</span>
+            </div>
+            <div class="bottles-content">
+                <h1>334 <span>total</span></h1>
+                
+            </div>
+        </section>
+
+        <!-- Machine Status Section -->
+        <section class="machine-status">
+            <h2>Machine Status</h2>
+            <div class="status-button full">Full</div>
+        </section>
+
+        <!-- Stations Section -->
+        <section class="stations">
+            <div class="station">
+                <h3>Station 1</h3>
+                <div class="available">Available</div>
+            </div>
+            <div class="station">
+                <h3>Station 2</h3>
+                <div class="available">Available</div>
+            </div>
+            <div class="station">
+                <h3>Station 3</h3>
+                <div class="available">Available</div>
+            </div>
+        </section>
+        
+        <!-- Machine Status update 
+        <p>Machine Status: <span id="machine-status">Checking...</span></p>
+        <button id="update-status">Update Machine Status</button>-->
+    </main>
+
+    <!-- JavaScript -->
     <script type="module" src="auth.js"></script>
     <script type="module" src="admin_dashboard.js"></script>
 </body>

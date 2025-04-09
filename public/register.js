@@ -24,7 +24,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     email,
                     name,
                     role: "user",
-                    verified: false
+                    verified: false,
+                    totalBottlesInserted: 0 // ✅ Add this line
                 });
             
                 // Clear form fields
@@ -36,8 +37,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error("Registration Error:", error.message);
                 alert(error.message);
             }
-            
-            
         });
     }
 });

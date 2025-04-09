@@ -176,29 +176,4 @@ header {
 }
 
 
-/* 🔹 Responsiveness */
-@media (max-width: 480px) {
-    body {
-        padding: 15px;
-    }
 
-    .logo {
-        width: 35vw; /* Increase size relative to smaller screens */
-        min-width: 300px; /* Avoid too small */
-        max-width: 500px; /* Prevent it from being too large */
-        margin-bottom: -20px;
-    }
-
-    .container {
-        padding: 1.5rem; /* Reduce padding */
-    }
-
-    .container input {
-        padding: 10px;
-        font-size: 12px;
-    }
-
-    .container button {
-        padding: 10px;
-    }
-}

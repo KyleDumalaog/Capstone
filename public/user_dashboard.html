@@ -1,37 +1,74 @@
-<!-- user_dashboard.html (User Dashboard) -->
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <link rel="icon" type="image/x-icon" href="assets/ReChargeLOGO (2).ico">
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>User Dashboard</title>
-        <link rel="stylesheet" href="styles.css">
-        <link rel="stylesheet" href="userdashboard.css">
-    </head>
-     <!-- Header Section -->
- <header>
-    <div class="logoheader-container">
-        <img src="assets/ReChargeLOGO (2).png" alt="Logo" class="logoHeader"> 
-    </div>
-    <a href="#" id="logout">Logout</a>
-</header>
-    
+<head>
+    <link rel="icon" type="image/x-icon" href="assets/ReChargeLOGO (2).ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="userdashboard.css">
+</head>
 <body>
+    <!-- Header Section -->
+    <header>
+        <div class="logoheader-container">
+            <img src="assets/ReChargeLOGO (2).png" alt="Logo" class="logoHeader">
+        </div>
+        <a href="#" id="logout" class="profile-icon">Logout</a>
+
+    </header>
+
+    <!-- Navigation -->
     <nav>
         <a href="user_dashboard.html">Dashboard</a>
         <a href="history.html">History</a>
-        <a href="rewards.html">Rewards</a>
     </nav>
-    <div class="dashboard-container">
-        <h2>Welcome, <span id="user-name"></span></h2>
-        <p>Charging Time Left: <span id="charging-time">0 mins</span></p>
-        <p>Total Bottles Inserted: <span id="total-bottles">0</span></p>
-        <button id="start-charging">Start Charging</button>
-        <button id="stop-charging">Stop Charging</button>
-    </div>
 
-        <script type="module" src="./auth.js"></script>
-        <script type="module" src="./user_dashboard.js"></script>
+    <!-- Dashboard Content -->
+    <main class="dashboard-container">
+        <h1>Hi <span id="user-name">User</span>!</h1>
+
+        <div class="timer-box">
+            <p>Charging Time Left:</p>
+            <h2 id="charging-time">00:00:00</h2>
+        </div>
+
+        <div class="bottles-box">
+            <div class="box-header">
+                <h3>Bottles Inserted</h3>
+                <span class="box-date">As of April 10</span>
+            </div>
+            <div class="box-content">
+                <span class="big-number" id="total-bottles">0</span>
+                <span class="label">total</span>
+                <!--<div class="chart-placeholder"></div>-->
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h4>Charging Time</h4>
+                <span class="value">00:00:00</span>
+                <span class="label">total</span>
+            </div>
+           <!-- <div class="stat-card">
+                <h4>Points Earned</h4>
+                <span class="value">8</span>
+                <span class="label">As of March 13</span>
+            </div> -->
+            <div class="stat-card">
+                <h4>Charging Stations</h4>
+                <span class="status available">Available</span>
+            </div></div>
+            <div class="stat-card-machine">
+                <h4>Machine Status</h4>
+                <span class="status active">Active</span>
+            </div>
+        
+
+    </main>
+
+    <script type="module" src="./auth.js"></script>
+    <script type="module" src="./user_dashboard.js"></script>
 </body>
 </html>
