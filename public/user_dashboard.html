@@ -15,7 +15,6 @@
             <img src="assets/ReChargeLOGO (2).png" alt="Logo" class="logoHeader">
         </div>
         <a href="#" id="logout" class="profile-icon">Logout</a>
-
     </header>
 
     <!-- Navigation -->
@@ -36,36 +35,26 @@
         <div class="bottles-box">
             <div class="box-header">
                 <h3>Bottles Inserted</h3>
-                <span class="box-date">As of April 10</span>
+                <span class="box-date">As of <span id="bottle-date">April 10</span></span>
             </div>
             <div class="box-content">
                 <span class="big-number" id="total-bottles">0</span>
                 <span class="label">total</span>
-                <!--<div class="chart-placeholder"></div>-->
             </div>
         </div>
 
         <div class="stats-grid">
-            <div class="stat-card">
-                <h4>Charging Time</h4>
-                <span class="value">00:00:00</span>
-                <span class="label">total</span>
-            </div>
-           <!-- <div class="stat-card">
-                <h4>Points Earned</h4>
-                <span class="value">8</span>
-                <span class="label">As of March 13</span>
-            </div> -->
-            <div class="stat-card">
-                <h4>Charging Stations</h4>
-                <span class="status available">Available</span>
-            </div></div>
-            <div class="stat-card-machine">
-                <h4>Machine Status</h4>
-                <span class="status active">Active</span>
-            </div>
-        
 
+            <div class="stat-card">
+                <h4>Current Station</h4>
+            <span class="status available" id="current-station">Not Assigned</span>
+            </div>
+
+            <div class="stat-card">
+                    <h4>Machine Status</h4>
+                    <span class="status active" id="machine-status">Active</span>
+                </div>
+            </div>
     </main>
 
     <script type="module" src="./auth.js"></script>

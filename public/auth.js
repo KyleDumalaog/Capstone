@@ -1,7 +1,8 @@
-import { signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"; 
 import { signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { auth, db } from "./firebase-config.js";
 import { updateDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 // 🔹 Listen for Authentication Changes
@@ -51,6 +52,17 @@ async function loginUser(email, password) {
         } else {
             window.location.replace("user_dashboard.html");
         }
+
+        // 🔹 Store the user's assigned station and time in Realtime Database
+        const rtdb = getDatabase();
+        const stationRef = ref(rtdb, "stations/1"); // Change the station as needed
+
+        await set(stationRef, {
+            userID: user.uid,
+            timeLeft: 600 // Example: 600 seconds, set this dynamically
+        });
+
+        console.log("User assigned to station and time left updated.");
     } catch (error) {
         console.error("Login Error:", error.message);
         alert(error.message);

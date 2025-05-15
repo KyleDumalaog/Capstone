@@ -1,13 +1,16 @@
-import { auth, db } from "./firebase-config.js"; 
+import { auth, db } from "./firebase-config.js";
 import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { doc, getDoc, updateDoc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 const userNameSpan = document.getElementById("user-name");
 const totalBottlesSpan = document.getElementById("total-bottles");
+const currentStationSpan = document.getElementById("current-station");
+const chargingTimeSpan = document.getElementById("charging-time");
 
 let currentUserId = null;
 let userBottleCount = 0;
+let currentStation = null;
 
 function getTodayDateString() {
     const today = new Date();
@@ -54,65 +57,72 @@ onAuthStateChanged(auth, async (user) => {
 
             totalBottlesSpan.textContent = userBottleCount;
 
-            // 🔁 Listen to Realtime DB objectCount
+            // Listen to Station assignment from RTDB
             const rtdb = getDatabase();
-            const objectCountRef = ref(rtdb, "objectCount");
+            const station1Ref = ref(rtdb, `stations/1`);
+            const station2Ref = ref(rtdb, `stations/2`);
+            const station3Ref = ref(rtdb, `stations/3`);
 
-            onValue(objectCountRef, async (snapshot) => {
-                const globalCount = snapshot.val();
-                if (globalCount === null) return;
+            // Check which station the user is assigned to
+            onValue(station1Ref, (snapshot) => {
+                const stationData = snapshot.val();
+                if (stationData && stationData.userID === currentUserId) {
+                    currentStation = "Station 1";
+                    currentStationSpan.textContent = currentStation;
+                    console.log("Assigned to Station 1");
 
-                const previousCount = parseInt(localStorage.getItem("prevGlobalObjectCount")) || 0;
-                const delta = globalCount - previousCount;
-
-                if (delta > 0) {
-                    userBottleCount += delta;
-                    totalBottlesSpan.textContent = userBottleCount;
-
-                    try {
-                        const userDocRef = doc(db, "users", currentUserId);
-                        await updateDoc(userDocRef, {
-                            totalBottlesInserted: userBottleCount,
-                        });
-
-                        const today = getTodayDateString();
-                        const historyRef = doc(db, "users", currentUserId, "bottleHistory", today);
-                        const historySnap = await getDoc(historyRef);
-
-                        if (historySnap.exists()) {
-                            await updateDoc(historyRef, {
-                                count: increment(delta),
-                                timestamp: new Date().toISOString(), // ✅ Optional, for latest timestamp
-                            });
-                        } else {
-                            await setDoc(historyRef, {
-                                count: delta,
-                                timestamp: new Date().toISOString(), // ✅ Add this line
-                            });
-                            
+                    // Fetch timeLeft for this station
+                    const chargingTimeRef = ref(rtdb, `stations/1/timeLeft`);
+                    onValue(chargingTimeRef, (snapshot) => {
+                        const chargingTimeLeft = snapshot.val();
+                        if (chargingTimeLeft !== null) {
+                            const minutes = Math.floor(chargingTimeLeft / 60);
+                            const seconds = chargingTimeLeft % 60;
+                            chargingTimeSpan.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
                         }
-                    } catch (error) {
-                        console.error("Failed to update Firestore:", error);
-                    }
-
-                    localStorage.setItem("prevGlobalObjectCount", globalCount);
+                    });
                 }
             });
 
-            // 🛠 Initialize prevGlobalObjectCount on first run
-            if (!localStorage.getItem("prevGlobalObjectCount")) {
-                const rtdb = getDatabase();
-                const objectCountRef = ref(rtdb, "objectCount");
-                onValue(objectCountRef, (snapshot) => {
-                    const initialCount = snapshot.val();
-                    if (initialCount !== null) {
-                        localStorage.setItem("prevGlobalObjectCount", initialCount);
-                    }
-                }, { onlyOnce: true });
-            }
+            onValue(station2Ref, (snapshot) => {
+                const stationData = snapshot.val();
+                if (stationData && stationData.userID === currentUserId) {
+                    currentStation = "Station 2";
+                    currentStationSpan.textContent = currentStation;
+                    console.log("Assigned to Station 2");
 
-            // 🔁 Periodically refresh Firestore count to reduce delay (every 5 seconds)
-            setInterval(refreshFirestoreBottleCount, 5000);
+                    // Fetch timeLeft for this station
+                    const chargingTimeRef = ref(rtdb, `stations/2/timeLeft`);
+                    onValue(chargingTimeRef, (snapshot) => {
+                        const chargingTimeLeft = snapshot.val();
+                        if (chargingTimeLeft !== null) {
+                            const minutes = Math.floor(chargingTimeLeft / 60);
+                            const seconds = chargingTimeLeft % 60;
+                            chargingTimeSpan.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                        }
+                    });
+                }
+            });
+
+            onValue(station3Ref, (snapshot) => {
+                const stationData = snapshot.val();
+                if (stationData && stationData.userID === currentUserId) {
+                    currentStation = "Station 3";
+                    currentStationSpan.textContent = currentStation;
+                    console.log("Assigned to Station 3");
+
+                    // Fetch timeLeft for this station
+                    const chargingTimeRef = ref(rtdb, `stations/3/timeLeft`);
+                    onValue(chargingTimeRef, (snapshot) => {
+                        const chargingTimeLeft = snapshot.val();
+                        if (chargingTimeLeft !== null) {
+                            const minutes = Math.floor(chargingTimeLeft / 60);
+                            const seconds = chargingTimeLeft % 60;
+                            chargingTimeSpan.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                        }
+                    });
+                }
+            });
 
         } else {
             console.error("User document not found!");
@@ -123,6 +133,7 @@ onAuthStateChanged(auth, async (user) => {
         userNameSpan.textContent = "Error Loading";
     }
 });
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const logoutButton = document.getElementById("logout");
