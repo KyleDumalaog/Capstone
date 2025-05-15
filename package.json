@@ -7,8 +7,10 @@
     "cors": "^2.8.5",
     "eslint": "^9.26.0",
     "express": "^5.1.0",
+    "firebase": "^11.7.3",
     "firebase-admin": "^13.2.0",
     "glob": "^11.0.2",
+    "init": "^0.1.2",
     "lru-cache": "^11.1.0",
     "rimraf": "^6.0.1"
   }
