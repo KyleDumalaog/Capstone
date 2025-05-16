@@ -1,15 +1,9 @@
 {
   "version": 2,
   "builds": [
-    {
-      "src": "functions/main.js",
-      "use": "@vercel/node"
-    }
+    { "src": "functions/main.js", "use": "@vercel/node" }
   ],
   "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "functions/main.js"
-    }
+    { "src": "/(.*)", "dest": "functions/main.js" }
   ]
 }
