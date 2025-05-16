@@ -503,6 +503,4 @@ app.delete('/super-admin/delete-user', (req, res) => {
   res.status(200).json({ message: 'User deleted' });
 });
 
-// Start the server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}/api-docs`));
+module.exports = app;
