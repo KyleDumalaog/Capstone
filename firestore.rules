@@ -1,0 +1,61 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+  
+  match /{document=**} {
+      allow read, write: if true;
+    }
+  
+  	match /superadmin/{docId} {
+      allow read, write: if request.auth.token.role == "admin";
+    	}
+  
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+      }
+  
+  	match /users/{userId} {
+      allow update, delete: if request.auth.token.role == "superadmin";
+    }
+      // ADMINS: Can only read charging stations
+    match /charging_stations/{stationId} {
+      allow read: if request.auth.token.role == "admin";
+    }
+
+    // SUPER ADMINS: Can update user roles
+    match /users/{userId} {
+      allow update: if request.auth.token.role == "superadmin";
+    }
+    
+    // Allow anyone to read users (Modify as needed)
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      
+      // Only allow authenticated users to write their own data
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    // 🔹 BOTTLES: Users can only add new bottles, not edit/delete
+    match /bottles/{bottleId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+    
+    // 🔹 CHARGING SESSIONS: Users can only add/read their own sessions
+    match /charging_sessions/{sessionId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+
+    // 🔹 REWARDS: Read-only for all users, editable by Admin/Super Admin
+    match /rewards/{rewardId} {
+      allow read: if request.auth != null;
+      allow create, update, delete: if request.auth.token.role in ["admin", "superadmin"];
+    }
+
+    // 🔹 MACHINE STATUS: Readable by all users, but only Admins can update
+    match /machine_status/{statusId} {
+      allow read: if request.auth != null;
+      allow update: if request.auth.token.role in ["admin", "superadmin"];
+    }
+  }
+}

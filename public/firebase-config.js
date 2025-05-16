@@ -4,13 +4,12 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"; // Import for Realtime DB
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAT97uL0B3d3jF2ZIDVQnfxgWWYhfDO-QE",
-  authDomain: "recharge-ba143.firebaseapp.com",
-  databaseURL: "https://recharge-ba143-default-rtdb.firebaseio.com", // URL for Realtime Database
-  projectId: "recharge-ba143",
-  storageBucket: "recharge-ba143.firebasestorage.app",
-  messagingSenderId: "846673751772",
-  appId: "1:846673751772:web:47f8d111e447f14859ce19"
+  apiKey: "AIzaSyCr4RNyFNu3Mxiepdj1on-PkwA-Gcm-xm8",
+  authDomain: "recharge-16ace.firebaseapp.com",
+  projectId: "recharge-16ace",
+  storageBucket: "recharge-16ace.firebasestorage.app",
+  messagingSenderId: "105729325400",
+  appId: "1:105729325400:web:0864e6728d575f3dcf8d2d"
 };
 
 // Initialize Firebase

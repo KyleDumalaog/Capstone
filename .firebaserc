@@ -1,7 +1,8 @@
 {
   "projects": {
     "default": "recharge-ba143",
-    "ReChargeWeb": "recharge-ba143"
+    "ReChargeWeb": "recharge-ba143",
+    "Cap1": "recharge-16ace"
   },
   "targets": {},
   "etags": {}
