@@ -29,7 +29,7 @@ const swaggerOptions = {
       { name: 'Super Admin' },
     ],
   },
-  apis: ['./main.js'], // This file will contain the swagger comments below
+  apis: ['./functions/main.js'], // This file will contain the swagger comments below
 };
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
